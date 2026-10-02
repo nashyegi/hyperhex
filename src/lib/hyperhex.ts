@@ -135,7 +135,7 @@ export function buildScenario() {
   const n = ring.length;
   const drones: Drone[] = [];
   const pairs = [[0, n / 2], [n / 4, (3 * n) / 4], [n / 8, (5 * n) / 8], [(3 * n) / 8, (7 * n) / 8], [n / 2 + 2, 2], [(3 * n) / 4 + 3, n / 4 + 3], [n / 6, (2 * n) / 3], [(5 * n) / 6, n / 3]];
-  pairs.forEach(([a, b], i) => {
+  (pairs as [number, number][]).forEach(([a, b], i) => {
     drones.push({ id: `UAV-${String(i + 1).padStart(2, "0")}`, color: COLORS[i], from: ring[Math.floor(a) % n], to: ring[Math.floor(b) % n], start: i % 3, path: [], replans: 0 });
   });
   const air = new Airspace();
