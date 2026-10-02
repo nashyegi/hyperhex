@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
-import { buildScenario, cellCenter, LAYERS, LAYER_H, SLOT_SEC, ORIGIN, type Drone, type Airspace } from "@/lib/hyperhex";
+import { alt, buildScenario, cellCenter, LAYERS, LAYER_H, SLOT_SEC, ORIGIN, type Drone, type Airspace } from "@/lib/hyperhex";
 
 const CESIUM = "https://cesium.com/downloads/cesiumjs/releases/1.121/Build/Cesium";
 
@@ -72,7 +72,7 @@ export function Workbench() {
 
   const pathPositions = (d: Drone) => {
     const C = (window as any).Cesium;
-    return d.path.map((p) => { const { lat, lng } = cellCenter(p.cell); return C.Cartesian3.fromDegrees(lng, lat, LAYERS[p.layer] + LAYER_H / 2); });
+    return d.path.map((p) => { const { lat, lng } = cellCenter(p.cell); return C.Cartesian3.fromDegrees(lng, lat, alt(p.layer) + LAYER_H / 2); });
   };
 
   // redraw reserved voxels for the current slot window
@@ -84,13 +84,13 @@ export function Workbench() {
     const slot = Math.floor(t);
     for (const c of s.air.noFly) {
       const b = cellToBoundary(c).flatMap(([la, ln]) => [ln, la]);
-      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: C.Cartesian3.fromDegreesArray(b), height: 0, extrudedHeight: LAYERS[2] + LAYER_H, material: C.Color.RED.withAlpha(0.18), outline: true, outlineColor: C.Color.RED } }));
+      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: C.Cartesian3.fromDegreesArray(b), height: 0, extrudedHeight: alt(2) + LAYER_H, material: C.Color.RED.withAlpha(0.18), outline: true, outlineColor: C.Color.RED } }));
     }
     for (const d of s.drones) for (const p of d.path) {
       if (p.t < slot || p.t > slot + 3) continue;
       const b = cellToBoundary(p.cell).flatMap(([la, ln]) => [ln, la]);
       const a = 0.55 - (p.t - slot) * 0.13;
-      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: C.Cartesian3.fromDegreesArray(b), height: LAYERS[p.layer], extrudedHeight: LAYERS[p.layer] + LAYER_H, material: C.Color.fromCssColorString(d.color).withAlpha(a), outline: p.t === slot, outlineColor: C.Color.WHITE } }));
+      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: C.Cartesian3.fromDegreesArray(b), height: alt(p.layer), extrudedHeight: alt(p.layer) + LAYER_H, material: C.Color.fromCssColorString(d.color).withAlpha(a), outline: p.t === slot, outlineColor: C.Color.WHITE } }));
     }
   }, [ready, Math.floor(t), sim.current.air.noFly.size, sim.current.air.log.length]);
 
@@ -108,7 +108,7 @@ export function Workbench() {
         const b = (i <= 0 ? a : d.path[i])!;
         const f = i <= 0 ? 0 : Math.min(1, (tRef.current - a.t) / (b.t - a.t));
         const ca = cellCenter(a.cell), cb = cellCenter(b.cell);
-        const h = LAYERS[a.layer] + (LAYERS[b.layer] - LAYERS[a.layer]) * f + LAYER_H / 2;
+        const h = alt(a.layer) + (alt(b.layer) - alt(a.layer)) * f + LAYER_H / 2;
         dronePos.current[d.id] = C.Cartesian3.fromDegrees(ca.lng + (cb.lng - ca.lng) * f, ca.lat + (cb.lat - ca.lat) * f, h);
       }
       raf = requestAnimationFrame(loop);
