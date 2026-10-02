@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
 import {
-  alt, benchmark, buildScenario, cellCenter, findConflicts, stateAt, CONTROLLERS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
+  alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
 } from "@/lib/hyperhex";
 
@@ -41,6 +41,7 @@ export function Workbench() {
   const ex = useRef(3);
   const X = (m: number) => m * ex.current;
   const bench = useMemo(() => benchmark(8), []);
+  const [inspect, setInspect] = useState<string | null>(null);
 
   if (!sim.current) sim.current = buildScenario(controller);
 
@@ -59,6 +60,15 @@ export function Workbench() {
         orientation: { heading: 0, pitch: C.Math.toRadians(-38), roll: 0 },
       });
       viewer.current = v;
+      const h = new C.ScreenSpaceEventHandler(v.scene.canvas);
+      h.setInputAction((e: any) => {
+        setPlaying(false);
+        const picked = v.scene.pick(e.position);
+        const id = typeof picked?.id?.id === "string" ? picked.id.id.replace(/-path$/, "") : null;
+        const d = id && sim.current?.drones.find((x) => x.id === id);
+        const st = d ? stateAt(d, Math.floor(tRef.current)) : null;
+        setInspect(st ? st.cell : null);
+      }, C.ScreenSpaceEventType.LEFT_CLICK);
       drawStatic();
       setReady(true);
     });
@@ -105,12 +115,22 @@ export function Workbench() {
       const a = 0.5 - (p.t - slot) * 0.12;
       voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: hex(p.cell), height: X(alt(p.layer)), extrudedHeight: X(alt(p.layer) + LAYER_H), material: C.Color.fromCssColorString(d.color).withAlpha(a), outline: p.t === slot, outlineColor: C.Color.WHITE } }));
     }
+    for (const st of findStacks(s.drones)) {
+      if (st.t !== slot) continue;
+      const focus = st.cell === inspect;
+      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: hex(st.cell), height: 0, extrudedHeight: X(alt(LAYERS.length - 1) + LAYER_H + 10), material: C.Color.WHITE.withAlpha(focus ? 0.12 : 0.05), outline: true, outlineColor: focus ? C.Color.YELLOW : C.Color.WHITE } }));
+      for (let l = 0; l < LAYERS.length; l++) {
+        const { lat, lng } = cellCenter(st.cell);
+        const m = st.members.find((x) => x.layer === l);
+        voxelEntities.current.push(v.entities.add({ position: C.Cartesian3.fromDegrees(lng, lat, X(alt(l) + LAYER_H / 2)), label: { text: `L${l} ${alt(l)}m ${m ? "· " + m.id : "· free"}`, font: "11px JetBrains Mono", fillColor: m ? C.Color.fromCssColorString(m.color) : C.Color.GRAY, outlineColor: C.Color.BLACK, outlineWidth: 3, style: C.LabelStyle.FILL_AND_OUTLINE, pixelOffset: new C.Cartesian2(70, 0), showBackground: false } }));
+      }
+    }
     for (const c of findConflicts(s.drones)) {
       if (c.t < slot - 1 || c.t > slot + 1) continue;
       const { lat, lng } = cellCenter(c.cell);
       voxelEntities.current.push(v.entities.add({ position: C.Cartesian3.fromDegrees(lng, lat, X(alt(c.layer) + LAYER_H + 8)), point: { pixelSize: 22, color: C.Color.RED.withAlpha(0.35), outlineColor: C.Color.RED, outlineWidth: 3 } }));
     }
-  }, [ready, slot, version]);
+  }, [ready, slot, version, inspect]);
 
   // animation loop
   useEffect(() => {
@@ -162,11 +182,32 @@ export function Workbench() {
     v.camera.flyTo({ destination: C.Cartesian3.fromDegrees(ORIGIN.lng, o[0], o[1]), orientation: { heading: 0, pitch: C.Math.toRadians(o[2]), roll: 0 }, duration: 1.2 });
   };
   const scrub = (v: number) => { tRef.current = v; setT(v); };
+  const jumpTo = (st: { t: number; cell: string }) => {
+    setPlaying(false); scrub(st.t); setInspect(st.cell);
+    if (ex.current < 6) setEx(6);
+    const C = (window as any).Cesium, v = viewer.current; if (!v) return;
+    const { lat, lng } = cellCenter(st.cell);
+    v.camera.flyTo({ destination: C.Cartesian3.fromDegrees(lng, lat - 0.0075, 420), orientation: { heading: 0, pitch: C.Math.toRadians(-12), roll: 0 }, duration: 1.4 });
+  };
 
   const s = sim.current;
   const m = s.air.metrics(s.drones);
   const airborne = s.drones.filter((d) => { const st = stateAt(d, slot); return st && st.cell !== d.to; }).length;
   const ctl = CONTROLLERS.find((c) => c.id === controller)!;
+  const stacks = findStacks(s.drones);
+  const showcase = (() => {
+    const seen = new Set<string>(), out: typeof stacks = [];
+    for (const st of [...stacks].sort((a, b) => b.members.length - a.members.length || a.t - b.t)) {
+      const key = st.members.map((x) => x.id).sort().join("+");
+      if (seen.has(key) && st.members.length < 3) continue;
+      seen.add(key); out.push(st); if (out.length >= 4) break;
+    }
+    return out.sort((a, b) => a.t - b.t);
+  })();
+  const nowStacks = stacks.filter((x) => x.t === slot);
+  const inspected = inspect ? (nowStacks.find((x) => x.cell === inspect) ?? null) : (!playing ? nowStacks[0] ?? null : null);
+  const inspectCell = inspected?.cell ?? (!playing ? inspect : null);
+  const column = inspectCell ? LAYERS.map((_, l) => ({ l, d: s.drones.find((d) => { const st = stateAt(d, slot); return st && st.cell === inspectCell && st.layer === l; }) })) : null;
 
   return (
     <div className="flex h-screen w-full bg-background text-foreground">
@@ -211,7 +252,21 @@ export function Workbench() {
         </div>
 
         <div className="border-b border-border p-4">
-          <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Benchmark · same 12 flights, TFR at slot 8</p>
+          <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Same tile · different altitude — jump to moment</p>
+          <div className="flex flex-col gap-1">
+            {showcase.map((st) => (
+              <button key={`${st.t}-${st.cell}`} onClick={() => jumpTo(st)} className={`flex items-center gap-2 rounded border border-border px-2 py-1.5 text-left font-mono text-[11px] hover:border-primary ${inspect === st.cell && slot === st.t ? "border-primary text-primary" : ""}`}>
+                <span className="text-muted-foreground">t{String(st.t).padStart(3, "0")}</span>
+                <span>{st.members.length}-drone stack</span>
+                <span className="ml-auto flex gap-1">{st.members.map((m) => <span key={m.id} title={`${m.id} L${m.layer}`} className="h-2 w-2 rounded-full" style={{ background: m.color }} />)}</span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">Tip: click any drone on the globe to pause and inspect its tile.</p>
+        </div>
+
+        <div className="border-b border-border p-4">
+          <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Benchmark · same {s.drones.length} flights, TFR at slot 8</p>
           <table className="w-full font-mono text-[11px]">
             <thead className="text-muted-foreground"><tr><th className="text-left font-normal">controller</th><th className="text-right font-normal">conflicts</th><th className="text-right font-normal">delay</th><th className="text-right font-normal">arrived</th></tr></thead>
             <tbody>
@@ -220,7 +275,7 @@ export function Workbench() {
                   <td>{c.name}</td>
                   <td className={`text-right ${b.conflicts ? "text-destructive" : ""}`}>{b.conflicts}</td>
                   <td className="text-right">{b.delay}</td>
-                  <td className="text-right">{b.arrived}/12</td>
+                  <td className="text-right">{b.arrived}/{s.drones.length}</td>
                 </tr>
               ); })}
             </tbody>
@@ -266,6 +321,21 @@ export function Workbench() {
           <div className="pt-1 text-muted-foreground">ALTITUDE SHELLS</div>
           {[...LAYERS].map((h, i) => ({ h, i })).reverse().map(({ h, i }) => <div key={i}>L{i} · {h}–{h + LAYER_H}m</div>)}
         </div>
+        {column && (
+          <div className="absolute left-4 top-4 w-72 rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground">
+            <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><button onClick={() => setInspect(null)} className="text-muted-foreground hover:text-foreground" aria-label="Close">×</button></div>
+            <div className="mt-1 truncate text-muted-foreground">H3 {inspectCell}</div>
+            <div className="mt-2 space-y-1">
+              {[...column].reverse().map(({ l, d }) => (
+                <div key={l} className="flex items-center gap-2 rounded border border-border px-2 py-1">
+                  <span className="w-20 text-muted-foreground">L{l} {alt(l)}–{alt(l) + LAYER_H}m</span>
+                  {d ? <><span className="h-2 w-2 rounded-full" style={{ background: d.color }} /><span>{d.id}</span><span className="ml-auto text-primary">reserved</span></> : <span className="ml-auto text-muted-foreground">free</span>}
+                </div>
+              ))}
+            </div>
+            {(() => { const n = column.filter((c) => c.d).length; return <div className={`mt-2 ${n >= 2 ? "text-primary" : "text-muted-foreground"}`}>{n >= 2 ? `${n} drones over the same tile, ≥${LAYER_H + 10}m vertical gap — no loss of separation.` : n === 1 ? "Single occupant." : "Tile empty at this slot."}</div>; })()}
+          </div>
+        )}
         {!ready && <div className="absolute inset-0 grid place-items-center font-mono text-sm text-muted-foreground">Loading globe…</div>}
         <div className="pointer-events-none absolute bottom-4 left-4 rounded-md bg-card/90 p-3 font-mono text-[11px] text-card-foreground">
           Solid prism = voxel held now · fading = next 3 slots · red column = no-fly zone · red ring = loss of separation · dashed line = drone's altitude above ground
