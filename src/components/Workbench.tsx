@@ -187,7 +187,7 @@ export function Workbench() {
     if (ex.current < 6) setEx(6);
     const C = (window as any).Cesium, v = viewer.current; if (!v) return;
     const { lat, lng } = cellCenter(st.cell);
-    v.camera.flyTo({ destination: C.Cartesian3.fromDegrees(lng, lat - 0.0075, 420), orientation: { heading: 0, pitch: C.Math.toRadians(-12), roll: 0 }, duration: 1.4 });
+    v.camera.flyTo({ destination: C.Cartesian3.fromDegrees(lng, lat - 0.016, 900), orientation: { heading: 0, pitch: C.Math.toRadians(-22), roll: 0 }, duration: 1.4 });
   };
 
   const s = sim.current;

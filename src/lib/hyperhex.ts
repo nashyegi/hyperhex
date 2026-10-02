@@ -287,7 +287,7 @@ export function buildScenario(controller: Controller = "hyperhex") {
   // Demo "triple stack": two flights share one corridor on the low and high shells while a third
   // flies it head-on in the middle shell — in 2D they overlap, in 3D they are 40 m apart.
   const sa = ring[Math.floor(n / 12)]!, sb = ring[(Math.floor(n / 12) + Math.floor(n / 2)) % n]!;
-  drones.push({ id: "STK-1", color: "#f8fafc", from: sa, to: sb, start: 28, layer: 0, path: [], intent: [], replans: 0 });
+  drones.push({ id: "STK-1", color: "#38bdf8", from: sa, to: sb, start: 28, layer: 0, path: [], intent: [], replans: 0 });
   drones.push({ id: "STK-2", color: "#ef4444", from: sb, to: sa, start: 28, layer: 1, path: [], intent: [], replans: 0 });
   drones.push({ id: "STK-3", color: "#84cc16", from: sa, to: sb, start: 28, layer: 2, path: [], intent: [], replans: 0 });
   const air = new Airspace(controller);
