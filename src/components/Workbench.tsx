@@ -333,7 +333,7 @@ export function Workbench() {
                 </div>
               ))}
             </div>
-            {(() => { const n = column.filter((c) => c.d).length; return <div className={`mt-2 ${n >= 2 ? "text-primary" : "text-muted-foreground"}`}>{n >= 2 ? `${n} drones over the same tile, ≥${LAYER_H + 10}m vertical gap — no loss of separation.` : n === 1 ? "Single occupant." : "Tile empty at this slot."}</div>; })()}
+            {(() => { const n = column.filter((c) => c.d).length; return <div className={`mt-2 ${n >= 2 ? "text-primary" : "text-muted-foreground"}`}>{n >= 2 ? `${n} drones over the same tile, ${alt(1) - alt(0)} m between shells — no loss of separation.` : n === 1 ? "Single occupant." : "Tile empty at this slot."}</div>; })()}
           </div>
         )}
         {!ready && <div className="absolute inset-0 grid place-items-center font-mono text-sm text-muted-foreground">Loading globe…</div>}
