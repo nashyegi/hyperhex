@@ -284,12 +284,12 @@ export function buildScenario(controller: Controller = "hyperhex") {
     drones.push({ id: `UAV-${String(i + 1).padStart(2, "0")}`, color: COLORS[i]!, from: ring[a]!, to: ring[b]!, start: Math.floor(i * 1.5),
       layer: Math.floor(bearing / 120) % LAYERS.length, path: [], intent: [], replans: 0 });
   }
-  // Demo "triple stack": three flights from 120° apart cross the centre tile together, one per altitude shell.
-  const stackCols = ["#f8fafc", "#facc15", "#22d3ee"];
-  for (let k = 0; k < 3; k++) {
-    const a = Math.floor((k * n) / 3) % n, b = (a + Math.floor(n / 2)) % n;
-    drones.push({ id: `STK-${k + 1}`, color: stackCols[k]!, from: ring[a]!, to: ring[b]!, start: 28, layer: k, path: [], intent: [], replans: 0 });
-  }
+  // Demo "triple stack": two flights share one corridor on the low and high shells while a third
+  // flies it head-on in the middle shell — in 2D they overlap, in 3D they are 40 m apart.
+  const sa = ring[Math.floor(n / 12)]!, sb = ring[(Math.floor(n / 12) + Math.floor(n / 2)) % n]!;
+  drones.push({ id: "STK-1", color: "#f8fafc", from: sa, to: sb, start: 28, layer: 0, path: [], intent: [], replans: 0 });
+  drones.push({ id: "STK-2", color: "#ef4444", from: sb, to: sa, start: 28, layer: 1, path: [], intent: [], replans: 0 });
+  drones.push({ id: "STK-3", color: "#84cc16", from: sa, to: sb, start: 28, layer: 2, path: [], intent: [], replans: 0 });
   const air = new Airspace(controller);
   air.admitAll(drones);
   return { air, drones, center };
