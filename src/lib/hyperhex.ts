@@ -81,7 +81,7 @@ export class Ledger {
 /** Safe Interval Path Planning over the lazy 4D hex graph. */
 export function sipp(ledger: Ledger | null, id: string, start: State, goal: string, noFly: Set<string>): State[] | null {
   const safe = (c: string, l: number): [number, number][] => (ledger ? ledger.safeIntervals(id, nodeKey(c, l)) : [[0, INF]]);
-  const edgeOk = (a: State, b: { cell: string; layer: number }, t: number) =>
+  const edgeOk = (a: { cell: string; layer: number }, b: { cell: string; layer: number }, t: number) =>
     !ledger || ledger.edgeFree(id, nodeKey(a.cell, a.layer), nodeKey(b.cell, b.layer), t);
   const h = (c: string) => gridDistance(c, goal);
   const s0 = safe(start.cell, start.layer).findIndex(([a, b]) => start.t >= a && start.t <= b);
