@@ -284,9 +284,27 @@ export function buildScenario(controller: Controller = "hyperhex") {
     drones.push({ id: `UAV-${String(i + 1).padStart(2, "0")}`, color: COLORS[i]!, from: ring[a]!, to: ring[b]!, start: Math.floor(i * 1.5),
       layer: Math.floor(bearing / 120) % LAYERS.length, path: [], intent: [], replans: 0 });
   }
+  // Demo "triple stack": two flights share one corridor on the low and high shells while a third
+  // flies it head-on in the middle shell — in 2D they overlap, in 3D they are 40 m apart.
+  const sa = ring[Math.floor(n / 12)]!, sb = ring[(Math.floor(n / 12) + Math.floor(n / 2)) % n]!;
+  drones.push({ id: "STK-1", color: "#38bdf8", from: sa, to: sb, start: 28, layer: 0, path: [], intent: [], replans: 0 });
+  drones.push({ id: "STK-2", color: "#ef4444", from: sb, to: sa, start: 28, layer: 1, path: [], intent: [], replans: 0 });
+  drones.push({ id: "STK-3", color: "#84cc16", from: sa, to: sb, start: 28, layer: 2, path: [], intent: [], replans: 0 });
   const air = new Airspace(controller);
   air.admitAll(drones);
   return { air, drones, center };
+}
+
+/** Moments where ≥2 drones occupy the same H3 tile in the same slot on different altitude shells. */
+export type Stack = { t: number; cell: string; members: { id: string; layer: number; color: string }[] };
+export function findStacks(drones: Drone[]): Stack[] {
+  const m = new Map<string, Stack>();
+  for (const d of drones) for (const p of d.path) {
+    const k = `${p.t}|${p.cell}`;
+    let s = m.get(k); if (!s) { s = { t: p.t, cell: p.cell, members: [] }; m.set(k, s); }
+    if (!s.members.some((x) => x.id === d.id)) s.members.push({ id: d.id, layer: p.layer, color: d.color });
+  }
+  return [...m.values()].filter((s) => new Set(s.members.map((x) => x.layer)).size >= 2).sort((a, b) => a.t - b.t);
 }
 
 /** Headless run of the same scenario with a TFR at `tfrAt`, for controller comparison. */
