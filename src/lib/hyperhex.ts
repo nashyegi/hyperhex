@@ -137,7 +137,6 @@ function simulateReactive(drones: Drone[], from: number, log: LogEntry[]) {
     const live = drones.filter((d) => { const l = d.path[d.path.length - 1]; return l && l.t === t && l.cell !== d.to; });
     for (const d of live) { const l = d.path[d.path.length - 1]!; occ.set(nodeKey(l.cell, l.layer), d.id); }
     const claimed = new Set<string>();
-    for (const d of drones) if (!d.path.length && d.start === t + 1) { /* launches handled below */ }
     for (const d of live) {
       const cur = d.path[d.path.length - 1]!; const nx = d.intent[(cur.i ?? 0) + 1];
       if (!nx) continue;
@@ -201,7 +200,7 @@ export class Airspace {
     this.log.push({ t: now, kind: "nofly", msg: `TFR activated: ${cells.length} cells closed` });
     for (const d of drones) {
       const route = this.controller === "reactive" ? d.intent : d.path;
-      const cur = stateAt(d, now) ?? (d.path[0] ? null : { ...route[0]!, t: d.start });
+      const cur = stateAt(d, now) ?? (route[0] ? { ...route[0], t: d.start } : null);
       if (!cur || cur.cell === d.to) continue;
       const ahead = this.controller === "reactive" ? route.slice((cur.i ?? 0) + 1) : route.filter((s) => s.t > now);
       if (!ahead.some((s) => this.noFly.has(s.cell)) || this.noFly.has(cur.cell)) continue;
