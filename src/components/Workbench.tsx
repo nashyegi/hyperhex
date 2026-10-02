@@ -175,7 +175,7 @@ export function Workbench() {
         </div>
 
         <div className="grid grid-cols-3 gap-px border-b border-border bg-border font-mono">
-          {([["SLOT", slot], ["AIRBORNE", airborne], ["CONFLICTS", m.conflicts], ["DELAY", `${m.delay}s·${SLOT_SEC}`], ["REPLANS", m.replans], ["LEDGER", m.ledger]] as const).map(([k, val]) => (
+          {([["SLOT", slot], ["AIRBORNE", airborne], ["CONFLICTS", m.conflicts], ["DELAY (slots)", m.delay], ["REPLANS", m.replans], ["LEDGER", m.ledger]] as const).map(([k, val]) => (
             <div key={k} className="bg-background p-3">
               <div className="text-[10px] text-muted-foreground">{k}</div>
               <div className={`text-lg ${k === "CONFLICTS" && m.conflicts > 0 ? "text-destructive" : "text-primary"}`}>{val}</div>
