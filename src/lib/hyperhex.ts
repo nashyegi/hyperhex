@@ -2,7 +2,7 @@
 import { latLngToCell, gridDisk, gridDistance, cellToLatLng } from "h3-js";
 
 export const RES = 9;
-export const LAYERS = [60, 100, 140]; // floor altitude (m) per layer
+export const LAYERS: number[] & { [i: number]: number } = [60, 100, 140] as any; // floor altitude (m) per layer
 export const LAYER_H = 30;
 export const SLOT_SEC = 4;
 export const MAX_T = 120;

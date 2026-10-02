@@ -103,8 +103,9 @@ export function Workbench() {
       const C = (window as any).Cesium;
       if (C && sim.current) for (const d of sim.current.drones) {
         const i = d.path.findIndex((p) => p.t > tRef.current);
-        const a = i <= 0 ? d.path[i === 0 ? 0 : d.path.length - 1] : d.path[i - 1];
-        const b = i <= 0 ? a : d.path[i];
+        if (!d.path.length) continue;
+        const a = (i <= 0 ? d.path[i === 0 ? 0 : d.path.length - 1] : d.path[i - 1])!;
+        const b = (i <= 0 ? a : d.path[i])!;
         const f = i <= 0 ? 0 : Math.min(1, (tRef.current - a.t) / (b.t - a.t));
         const ca = cellCenter(a.cell), cb = cellCenter(b.cell);
         const h = LAYERS[a.layer] + (LAYERS[b.layer] - LAYERS[a.layer]) * f + LAYER_H / 2;
