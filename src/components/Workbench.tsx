@@ -56,7 +56,7 @@ export function Workbench() {
     const C = (window as any).Cesium, v = viewer.current, s = sim.current!;
     for (const c of gridDisk(s.center, 7)) {
       const b = cellToBoundary(c).flatMap(([la, ln]) => [ln, la]);
-      v.entities.add({ polyline: { positions: C.Cartesian3.fromDegreesArrayHeights(b.flatMap((x, i) => (i % 2 ? [x, 2] : [x])).concat([b[0], b[1], 2])), width: 1, material: C.Color.fromCssColorString("#0f172a").withAlpha(0.35) } });
+      v.entities.add({ polyline: { positions: C.Cartesian3.fromDegreesArrayHeights(b.flatMap((x, i) => (i % 2 ? [x, 2] : [x])).concat([b[0]!, b[1]!, 2])), width: 1, material: C.Color.fromCssColorString("#0f172a").withAlpha(0.35) } });
     }
     for (const d of s.drones) {
       dronePos.current[d.id] = C.Cartesian3.fromDegrees(0, 0, 0);
@@ -99,7 +99,7 @@ export function Workbench() {
     let raf = 0, last = performance.now();
     const loop = (now: number) => {
       const dt = (now - last) / 1000; last = now;
-      if (playing) { tRef.current += dt / (SLOT_SEC / 4); setT(tRef.current); }
+      if (playing) { tRef.current += dt * 0.8; setT(tRef.current); }
       const C = (window as any).Cesium;
       if (C && sim.current) for (const d of sim.current.drones) {
         const i = d.path.findIndex((p) => p.t > tRef.current);
@@ -118,7 +118,7 @@ export function Workbench() {
 
   const refreshPaths = () => {
     const v = viewer.current;
-    for (const d of sim.current!.drones) v.entities.getById(`${d.id}-path`).polyline.positions = pathPositions(d);
+    for (const d of sim.current!.drones) v.entities.getById(`${d.id}-path`)!.polyline.positions = pathPositions(d);
     force((x) => x + 1);
   };
 
