@@ -36,6 +36,10 @@ export function Workbench() {
   const voxelEntities = useRef<any[]>([]);
   const dronePos = useRef<Record<string, any>>({});
   const tRef = useRef(0);
+  const droneAlt = useRef<Record<string, number>>({});
+  const [exag, setExag] = useState(3);
+  const ex = useRef(3);
+  const X = (m: number) => m * ex.current;
   const bench = useMemo(() => benchmark(8), []);
 
   if (!sim.current) sim.current = buildScenario(controller);
@@ -63,7 +67,7 @@ export function Workbench() {
 
   const pathPositions = (d: Drone) => {
     const C = (window as any).Cesium;
-    return d.path.map((p) => { const { lat, lng } = cellCenter(p.cell); return C.Cartesian3.fromDegrees(lng, lat, alt(p.layer) + LAYER_H / 2); });
+    return d.path.map((p) => { const { lat, lng } = cellCenter(p.cell); return C.Cartesian3.fromDegrees(lng, lat, X(alt(p.layer) + LAYER_H / 2)); });
   };
 
   const drawStatic = () => {
@@ -77,9 +81,11 @@ export function Workbench() {
       v.entities.add({
         id: d.id,
         position: new C.CallbackProperty(() => dronePos.current[d.id], false),
-        point: { pixelSize: 11, color: C.Color.fromCssColorString(d.color), outlineColor: C.Color.BLACK, outlineWidth: 2 },
-        label: { text: d.id, font: "12px JetBrains Mono", pixelOffset: new C.Cartesian2(0, -18), fillColor: C.Color.WHITE, outlineColor: C.Color.BLACK, outlineWidth: 3, style: C.LabelStyle.FILL_AND_OUTLINE, scale: 0.85 },
+        point: { pixelSize: 14, color: C.Color.fromCssColorString(d.color), outlineColor: C.Color.BLACK, outlineWidth: 2 },
+        label: { text: new C.CallbackProperty(() => `${d.id} · ${Math.round(droneAlt.current[d.id] ?? 0)}m`, false), font: "12px JetBrains Mono", pixelOffset: new C.Cartesian2(0, -18), fillColor: C.Color.WHITE, outlineColor: C.Color.BLACK, outlineWidth: 3, style: C.LabelStyle.FILL_AND_OUTLINE, scale: 0.85 },
       });
+      v.entities.add({ polyline: { positions: new C.CallbackProperty(() => { const p = dronePos.current[d.id]; const c = C.Cartographic.fromCartesian(p); if (!c || c.height < 0) return []; return [C.Cartesian3.fromRadians(c.longitude, c.latitude, 0), p]; }, false), width: 1.5, material: new C.PolylineDashMaterialProperty({ color: C.Color.fromCssColorString(d.color), dashLength: 8 }) } });
+      v.entities.add({ position: new C.CallbackProperty(() => { const c = C.Cartographic.fromCartesian(dronePos.current[d.id]); return c && c.height >= 0 ? C.Cartesian3.fromRadians(c.longitude, c.latitude, 1) : C.Cartesian3.fromDegrees(0, 0, -1000); }, false), ellipse: { semiMajorAxis: 18, semiMinorAxis: 18, material: C.Color.fromCssColorString(d.color).withAlpha(0.35), height: 1 } });
       v.entities.add({ id: `${d.id}-path`, polyline: { positions: pathPositions(d), width: 2, material: C.Color.fromCssColorString(d.color).withAlpha(0.5) } });
     }
   };
@@ -93,16 +99,16 @@ export function Workbench() {
     voxelEntities.current = [];
     const hex = (c: string) => C.Cartesian3.fromDegreesArray(cellToBoundary(c).flatMap(([la, ln]) => [ln, la]));
     for (const c of s.air.noFly)
-      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: hex(c), height: 0, extrudedHeight: alt(2) + LAYER_H, material: C.Color.RED.withAlpha(0.18), outline: true, outlineColor: C.Color.RED } }));
+      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: hex(c), height: 0, extrudedHeight: X(alt(2) + LAYER_H), material: C.Color.RED.withAlpha(0.18), outline: true, outlineColor: C.Color.RED } }));
     for (const d of s.drones) for (const p of d.path) {
       if (p.t < slot || p.t > slot + 3) continue;
       const a = 0.5 - (p.t - slot) * 0.12;
-      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: hex(p.cell), height: alt(p.layer), extrudedHeight: alt(p.layer) + LAYER_H, material: C.Color.fromCssColorString(d.color).withAlpha(a), outline: p.t === slot, outlineColor: C.Color.WHITE } }));
+      voxelEntities.current.push(v.entities.add({ polygon: { hierarchy: hex(p.cell), height: X(alt(p.layer)), extrudedHeight: X(alt(p.layer) + LAYER_H), material: C.Color.fromCssColorString(d.color).withAlpha(a), outline: p.t === slot, outlineColor: C.Color.WHITE } }));
     }
     for (const c of findConflicts(s.drones)) {
       if (c.t < slot - 1 || c.t > slot + 1) continue;
       const { lat, lng } = cellCenter(c.cell);
-      voxelEntities.current.push(v.entities.add({ position: C.Cartesian3.fromDegrees(lng, lat, alt(c.layer) + LAYER_H + 8), point: { pixelSize: 22, color: C.Color.RED.withAlpha(0.35), outlineColor: C.Color.RED, outlineWidth: 3 } }));
+      voxelEntities.current.push(v.entities.add({ position: C.Cartesian3.fromDegrees(lng, lat, X(alt(c.layer) + LAYER_H + 8)), point: { pixelSize: 22, color: C.Color.RED.withAlpha(0.35), outlineColor: C.Color.RED, outlineWidth: 3 } }));
     }
   }, [ready, slot, version]);
 
@@ -115,13 +121,14 @@ export function Workbench() {
       const C = (window as any).Cesium;
       if (C && sim.current) for (const d of sim.current.drones) {
         const first = d.path[0], end = d.path[d.path.length - 1];
-        if (!first || !end || tRef.current < first.t || tRef.current > end.t + 0.5) { dronePos.current[d.id] = C.Cartesian3.fromDegrees(0, 0, -1000); continue; }
+        if (!first || !end || tRef.current < first.t || tRef.current > end.t + 0.5) { droneAlt.current[d.id] = 0; dronePos.current[d.id] = C.Cartesian3.fromDegrees(0, 0, -1000); continue; }
         const i = d.path.findIndex((p) => p.t > tRef.current);
         const a = i < 0 ? end : d.path[i - 1]!, b = i < 0 ? end : d.path[i]!;
         const f = a === b ? 0 : Math.min(1, (tRef.current - a.t) / (b.t - a.t));
         const ca = cellCenter(a.cell), cb = cellCenter(b.cell);
         const h = alt(a.layer) + (alt(b.layer) - alt(a.layer)) * f + LAYER_H / 2;
-        dronePos.current[d.id] = C.Cartesian3.fromDegrees(ca.lng + (cb.lng - ca.lng) * f, ca.lat + (cb.lat - ca.lat) * f, h);
+        dronePos.current[d.id] = C.Cartesian3.fromDegrees(ca.lng + (cb.lng - ca.lng) * f, ca.lat + (cb.lat - ca.lat) * f, X(h));
+        droneAlt.current[d.id] = h;
       }
       raf = requestAnimationFrame(loop);
     };
@@ -148,6 +155,12 @@ export function Workbench() {
     force((x) => x + 1);
   };
   const pick = (c: Controller) => { setController(c); restart(c); };
+  const setEx = (n: number) => { ex.current = n; setExag(n); refreshPaths(); };
+  const cam = (mode: "oblique" | "side" | "top") => {
+    const C = (window as any).Cesium, v = viewer.current; if (!v) return;
+    const o = { oblique: [ORIGIN.lat - 0.035, 2600, -38], side: [ORIGIN.lat - 0.022, 260, -4], top: [ORIGIN.lat, 4200, -90] }[mode];
+    v.camera.flyTo({ destination: C.Cartesian3.fromDegrees(ORIGIN.lng, o[0], o[1]), orientation: { heading: 0, pitch: C.Math.toRadians(o[2]), roll: 0 }, duration: 1.2 });
+  };
   const scrub = (v: number) => { tRef.current = v; setT(v); };
 
   const s = sim.current;
@@ -245,9 +258,17 @@ export function Workbench() {
       </aside>
       <main className="relative flex-1">
         <div ref={el} className="absolute inset-0" />
+        <div className="absolute right-4 top-4 space-y-2 rounded-md bg-card/90 p-3 font-mono text-[11px] text-card-foreground">
+          <div className="text-muted-foreground">VIEW</div>
+          <div className="flex gap-1">{(["oblique", "side", "top"] as const).map((m) => <button key={m} onClick={() => cam(m)} className="rounded border border-border px-2 py-1 capitalize hover:text-primary">{m}</button>)}</div>
+          <div className="text-muted-foreground">VERTICAL SCALE</div>
+          <div className="flex gap-1">{[1, 3, 6].map((n) => <button key={n} onClick={() => setEx(n)} className={`rounded border border-border px-2 py-1 ${exag === n ? "bg-primary text-primary-foreground" : ""}`}>{n}×</button>)}</div>
+          <div className="pt-1 text-muted-foreground">ALTITUDE SHELLS</div>
+          {[...LAYERS].map((h, i) => ({ h, i })).reverse().map(({ h, i }) => <div key={i}>L{i} · {h}–{h + LAYER_H}m</div>)}
+        </div>
         {!ready && <div className="absolute inset-0 grid place-items-center font-mono text-sm text-muted-foreground">Loading globe…</div>}
         <div className="pointer-events-none absolute bottom-4 left-4 rounded-md bg-card/90 p-3 font-mono text-[11px] text-card-foreground">
-          Solid prism = voxel held now · fading = next 3 slots · red column = no-fly zone · red ring = loss of separation
+          Solid prism = voxel held now · fading = next 3 slots · red column = no-fly zone · red ring = loss of separation · dashed line = drone's altitude above ground
         </div>
       </main>
     </div>
