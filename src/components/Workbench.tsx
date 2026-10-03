@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
+import { ChevronDown, Layers3, Menu, Pause, Play, RotateCcw, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
@@ -42,6 +44,8 @@ export function Workbench() {
   const X = (m: number) => m * ex.current;
   const bench = useMemo(() => benchmark(8), []);
   const [inspect, setInspect] = useState<string | null>(null);
+  const [mobilePanel, setMobilePanel] = useState(false);
+  const [mobileView, setMobileView] = useState(false);
 
   if (!sim.current) sim.current = buildScenario(controller);
 
@@ -60,6 +64,8 @@ export function Workbench() {
         orientation: { heading: 0, pitch: C.Math.toRadians(-38), roll: 0 },
       });
       viewer.current = v;
+      const observer = new ResizeObserver(() => { if (!v.isDestroyed()) v.resize(); });
+      observer.observe(el.current);
       const h = new C.ScreenSpaceEventHandler(v.scene.canvas);
       h.setInputAction((e: any) => {
         setPlaying(false);
@@ -72,7 +78,7 @@ export function Workbench() {
       drawStatic();
       setReady(true);
     });
-    return () => { dead = true; viewer.current?.destroy(); viewer.current = null; };
+    return () => { dead = true; observerRef.current?.disconnect(); viewer.current?.destroy(); viewer.current = null; };
   }, []);
 
   const pathPositions = (d: Drone) => {
