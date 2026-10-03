@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
-import { Layers3, Menu, Pause, Play, RotateCcw, X } from "lucide-react";
+import { Layers3, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
@@ -237,7 +237,7 @@ export function Workbench() {
     <div className="relative flex h-dvh w-full overflow-hidden bg-background text-foreground">
       <aside className={`${mobilePanel ? "flex" : "hidden"} absolute inset-0 z-30 w-full flex-col overflow-y-auto border-r border-border bg-background pb-8 lg:static lg:flex lg:w-[400px] lg:shrink-0 lg:pb-0`}>
         <header className="border-b border-border p-5">
-          <Button variant="ghost" size="icon" className="float-right lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><X /></Button>
+          <Button variant="ghost" size="icon" className="float-right lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">HyperHex / UTM Lab</p>
           <h1 className="mt-1 font-display text-2xl font-semibold">4D Airspace Reservations</h1>
           <p className="mt-2 text-sm text-muted-foreground">H3 res-9 hexes × {LAYERS.length} altitude shells × {SLOT_SEC}s slots. Lazy graph, sparse interval ledger, safe-interval search.</p>
@@ -346,7 +346,7 @@ export function Workbench() {
           </div>
         </div>
         <div className={`${mobileView ? "block" : "hidden"} absolute right-3 top-14 z-20 max-h-[calc(100dvh-10rem)] space-y-2 overflow-y-auto rounded-md border border-border bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:right-4 lg:top-4 lg:block lg:max-h-none lg:border-0 lg:bg-card/90`}>
-          <Button variant="ghost" size="icon" className="float-right h-5 w-5 lg:hidden" onClick={() => setMobileView(false)} aria-label="Close view settings"><X /></Button>
+          <Button variant="ghost" size="icon" className="float-right h-5 w-5 lg:hidden" onClick={() => setMobileView(false)} aria-label="Close view settings"><CloseIcon /></Button>
           <div className="text-muted-foreground">VIEW</div>
           <div className="flex gap-1">{(["oblique", "side", "top"] as const).map((m) => <Button variant="outline" size="sm" key={m} onClick={() => { cam(m); setMobileView(false); }} className="h-8 capitalize">{m}</Button>)}</div>
           <div className="text-muted-foreground">VERTICAL SCALE</div>
@@ -356,7 +356,7 @@ export function Workbench() {
         </div>
         {column && (
           <div className="absolute bottom-20 left-3 right-3 z-10 max-h-[min(48dvh,330px)] overflow-y-auto rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:bottom-auto lg:left-4 lg:right-auto lg:top-4 lg:max-h-none lg:w-72">
-            <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setInspect(null)} aria-label="Close inspector"><X /></Button></div>
+            <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setInspect(null)} aria-label="Close inspector"><CloseIcon /></Button></div>
             <div className="mt-1 truncate text-muted-foreground">H3 {inspectCell}</div>
             <div className="mt-2 space-y-1">
               {[...column].reverse().map(({ l, d }) => (
