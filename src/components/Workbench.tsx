@@ -45,6 +45,7 @@ export function Workbench() {
   const X = (m: number) => m * ex.current;
   const bench = useMemo(() => benchmark(8), []);
   const [inspect, setInspect] = useState<string | null>(null);
+  const [inspectorClosed, setInspectorClosed] = useState(false);
   const [mobilePanel, setMobilePanel] = useState(false);
   const [mobileView, setMobileView] = useState(false);
 
@@ -92,6 +93,7 @@ export function Workbench() {
         const d = id && sim.current?.drones.find((x) => x.id === id);
         const st = d ? stateAt(d, Math.floor(tRef.current)) : null;
         setInspect(st ? st.cell : null);
+        setInspectorClosed(false);
       }, C.ScreenSpaceEventType.LEFT_CLICK);
       drawStatic();
       setReady(true);
@@ -207,7 +209,7 @@ export function Workbench() {
   };
   const scrub = (v: number) => { tRef.current = v; setT(v); };
   const jumpTo = (st: { t: number; cell: string }) => {
-    setPlaying(false); scrub(st.t); setInspect(st.cell);
+    setPlaying(false); scrub(st.t); setInspect(st.cell); setInspectorClosed(false);
     if (ex.current < 6) setEx(6);
     const C = (window as any).Cesium, v = viewer.current; if (!v) return;
     const { lat, lng } = cellCenter(st.cell);
@@ -231,7 +233,7 @@ export function Workbench() {
   const nowStacks = stacks.filter((x) => x.t === slot);
   const inspected = inspect ? (nowStacks.find((x) => x.cell === inspect) ?? null) : (!playing ? nowStacks[0] ?? null : null);
   const inspectCell = inspected?.cell ?? (!playing ? inspect : null);
-  const column = inspectCell ? LAYERS.map((_, l) => ({ l, d: s.drones.find((d) => { const st = stateAt(d, slot); return st && st.cell === inspectCell && st.layer === l; }) })) : null;
+  const column = !inspectorClosed && inspectCell ? LAYERS.map((_, l) => ({ l, d: s.drones.find((d) => { const st = stateAt(d, slot); return st && st.cell === inspectCell && st.layer === l; }) })) : null;
 
   return (
     <div className="relative flex h-dvh w-full overflow-hidden bg-background text-foreground">
@@ -355,8 +357,8 @@ export function Workbench() {
           {[...LAYERS].map((h, i) => ({ h, i })).reverse().map(({ h, i }) => <div key={i}>L{i} · {h}–{h + LAYER_H}m</div>)}
         </div>
         {column && (
-          <div className="absolute bottom-20 left-3 right-3 z-10 max-h-[min(48dvh,330px)] overflow-y-auto rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:bottom-auto lg:left-4 lg:right-auto lg:top-4 lg:max-h-none lg:w-72">
-            <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setInspect(null)} aria-label="Close inspector"><CloseIcon /></Button></div>
+          <div className={`${mobileView ? "max-lg:hidden" : ""} absolute bottom-20 left-3 right-3 z-10 max-h-[min(48dvh,330px)] overflow-y-auto rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground max-lg:landscape:right-auto max-lg:landscape:w-[min(22rem,calc(100%-1.5rem))] lg:bottom-auto lg:left-4 lg:right-auto lg:top-4 lg:max-h-none lg:w-72`}>
+            <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setInspect(null); setInspectorClosed(true); }} aria-label="Close inspector"><CloseIcon /></Button></div>
             <div className="mt-1 truncate text-muted-foreground">H3 {inspectCell}</div>
             <div className="mt-2 space-y-1">
               {[...column].reverse().map(({ l, d }) => (
