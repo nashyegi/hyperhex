@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
+import { Layers3, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
@@ -28,6 +30,7 @@ export function Workbench() {
   const [controller, setController] = useState<Controller>("hyperhex");
   const sim = useRef<Sim | null>(null);
   const viewer = useRef<any>(null);
+  const observerRef = useRef<ResizeObserver | null>(null);
   const [t, setT] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
@@ -42,6 +45,9 @@ export function Workbench() {
   const X = (m: number) => m * ex.current;
   const bench = useMemo(() => benchmark(8), []);
   const [inspect, setInspect] = useState<string | null>(null);
+  const [inspectorClosed, setInspectorClosed] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState(false);
+  const [mobileView, setMobileView] = useState(false);
 
   if (!sim.current) sim.current = buildScenario(controller);
 
@@ -60,6 +66,25 @@ export function Workbench() {
         orientation: { heading: 0, pitch: C.Math.toRadians(-38), roll: 0 },
       });
       viewer.current = v;
+      let compact = false;
+      const observer = new ResizeObserver(() => {
+        if (v.isDestroyed() || !el.current) return;
+        v.resize();
+        const mobile = el.current.clientWidth < 1024;
+        if (mobile !== compact) {
+          compact = mobile;
+          if (mobile) v.camera.setView({
+            destination: C.Cartesian3.fromDegrees(ORIGIN.lng, ORIGIN.lat - 0.018, 3400),
+            orientation: { heading: 0, pitch: C.Math.toRadians(-57), roll: 0 },
+          });
+        }
+        for (const drone of sim.current?.drones ?? []) {
+          const entity = v.entities.getById(drone.id);
+          if (entity?.label) entity.label.show = !mobile;
+        }
+      });
+      observer.observe(el.current);
+      observerRef.current = observer;
       const h = new C.ScreenSpaceEventHandler(v.scene.canvas);
       h.setInputAction((e: any) => {
         setPlaying(false);
@@ -68,11 +93,12 @@ export function Workbench() {
         const d = id && sim.current?.drones.find((x) => x.id === id);
         const st = d ? stateAt(d, Math.floor(tRef.current)) : null;
         setInspect(st ? st.cell : null);
+        setInspectorClosed(false);
       }, C.ScreenSpaceEventType.LEFT_CLICK);
       drawStatic();
       setReady(true);
     });
-    return () => { dead = true; viewer.current?.destroy(); viewer.current = null; };
+    return () => { dead = true; observerRef.current?.disconnect(); viewer.current?.destroy(); viewer.current = null; };
   }, []);
 
   const pathPositions = (d: Drone) => {
@@ -183,7 +209,7 @@ export function Workbench() {
   };
   const scrub = (v: number) => { tRef.current = v; setT(v); };
   const jumpTo = (st: { t: number; cell: string }) => {
-    setPlaying(false); scrub(st.t); setInspect(st.cell);
+    setPlaying(false); scrub(st.t); setInspect(st.cell); setInspectorClosed(false);
     if (ex.current < 6) setEx(6);
     const C = (window as any).Cesium, v = viewer.current; if (!v) return;
     const { lat, lng } = cellCenter(st.cell);
@@ -207,12 +233,13 @@ export function Workbench() {
   const nowStacks = stacks.filter((x) => x.t === slot);
   const inspected = inspect ? (nowStacks.find((x) => x.cell === inspect) ?? null) : (!playing ? nowStacks[0] ?? null : null);
   const inspectCell = inspected?.cell ?? (!playing ? inspect : null);
-  const column = inspectCell ? LAYERS.map((_, l) => ({ l, d: s.drones.find((d) => { const st = stateAt(d, slot); return st && st.cell === inspectCell && st.layer === l; }) })) : null;
+  const column = !inspectorClosed && inspectCell ? LAYERS.map((_, l) => ({ l, d: s.drones.find((d) => { const st = stateAt(d, slot); return st && st.cell === inspectCell && st.layer === l; }) })) : null;
 
   return (
-    <div className="flex h-screen w-full bg-background text-foreground">
-      <aside className="flex w-[400px] shrink-0 flex-col border-r border-border">
+    <div className="relative flex h-dvh w-full overflow-hidden bg-background text-foreground">
+      <aside className={`${mobilePanel ? "flex" : "hidden"} absolute inset-0 z-30 w-full flex-col overflow-y-auto border-r border-border bg-background pb-8 lg:static lg:flex lg:w-[400px] lg:shrink-0 lg:pb-0`}>
         <header className="border-b border-border p-5">
+          <Button variant="ghost" size="icon" className="float-right lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">HyperHex / UTM Lab</p>
           <h1 className="mt-1 font-display text-2xl font-semibold">4D Airspace Reservations</h1>
           <p className="mt-2 text-sm text-muted-foreground">H3 res-9 hexes × {LAYERS.length} altitude shells × {SLOT_SEC}s slots. Lazy graph, sparse interval ledger, safe-interval search.</p>
@@ -222,7 +249,7 @@ export function Workbench() {
           <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Controller</p>
           <div className="grid grid-cols-3 gap-1 rounded-md bg-secondary p-1">
             {CONTROLLERS.map((c) => (
-              <button key={c.id} onClick={() => pick(c.id)} className={`rounded px-2 py-1.5 text-xs font-medium ${controller === c.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}>{c.name}</button>
+              <Button key={c.id} variant={controller === c.id ? "default" : "ghost"} size="sm" onClick={() => pick(c.id)} className="h-auto min-w-0 whitespace-normal px-1 py-2 text-center leading-tight">{c.name}</Button>
             ))}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">{ctl.blurb}</p>
@@ -239,9 +266,9 @@ export function Workbench() {
 
         <div className="space-y-3 border-b border-border p-4">
           <div className="flex gap-2">
-            <button onClick={() => setPlaying((p) => !p)} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">{playing ? "Pause" : "Play"}</button>
-            <button onClick={tfr} disabled={s.air.noFly.size > 0} className="rounded-md bg-destructive px-3 py-2 text-sm font-medium text-destructive-foreground disabled:opacity-40">Inject no-fly zone</button>
-            <button onClick={() => restart(controller)} className="rounded-md border border-border px-3 py-2 text-sm">Reset</button>
+            <Button onClick={() => setPlaying((p) => !p)}>{playing ? "Pause" : "Play"}</Button>
+            <Button variant="destructive" onClick={tfr} disabled={s.air.noFly.size > 0}>Inject no-fly zone</Button>
+            <Button variant="outline" onClick={() => restart(controller)}>Reset</Button>
           </div>
           <div className="flex items-center gap-3 font-mono text-[11px] text-muted-foreground">
             <input type="range" min={0} max={T_END} step={0.1} value={t} onChange={(e) => scrub(+e.target.value)} className="flex-1 accent-primary" aria-label="Time" />
@@ -255,11 +282,11 @@ export function Workbench() {
           <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Same tile · different altitude — jump to moment</p>
           <div className="flex flex-col gap-1">
             {showcase.map((st) => (
-              <button key={`${st.t}-${st.cell}`} onClick={() => jumpTo(st)} className={`flex items-center gap-2 rounded border border-border px-2 py-1.5 text-left font-mono text-[11px] hover:border-primary ${inspect === st.cell && slot === st.t ? "border-primary text-primary" : ""}`}>
+              <Button variant="outline" key={`${st.t}-${st.cell}`} onClick={() => { jumpTo(st); setMobilePanel(false); }} className={`flex h-auto w-full items-center justify-start gap-2 rounded border border-border px-2 py-1.5 text-left font-mono text-[11px] hover:border-primary ${inspect === st.cell && slot === st.t ? "border-primary text-primary" : ""}`}>
                 <span className="text-muted-foreground">t{String(st.t).padStart(3, "0")}</span>
                 <span>{st.members.length}-drone stack</span>
                 <span className="ml-auto flex gap-1">{st.members.map((m) => <span key={m.id} title={`${m.id} L${m.layer}`} className="h-2 w-2 rounded-full" style={{ background: m.color }} />)}</span>
-              </button>
+              </Button>
             ))}
           </div>
           <p className="mt-2 text-[11px] text-muted-foreground">Tip: click any drone on the globe to pause and inspect its tile.</p>
@@ -311,19 +338,27 @@ export function Workbench() {
           </ul>
         </div>
       </aside>
-      <main className="relative flex-1">
+      <main className="relative min-w-0 flex-1">
         <div ref={el} className="absolute inset-0" />
-        <div className="absolute right-4 top-4 space-y-2 rounded-md bg-card/90 p-3 font-mono text-[11px] text-card-foreground">
+        <div className="absolute left-3 right-3 top-3 z-10 flex items-start justify-between gap-2 lg:hidden">
+          <Button variant="secondary" size="sm" className="shrink-0 border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls"><Menu /> Controls</Button>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="truncate rounded border border-border bg-card/95 px-2 py-1.5 font-mono text-[10px] text-primary">t{String(slot).padStart(3, "0")} · {airborne} air · {m.conflicts} conflicts</span>
+            <Button variant="secondary" size="icon" className="shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
+          </div>
+        </div>
+        <div className={`${mobileView ? "block" : "hidden"} absolute right-3 top-14 z-20 max-h-[calc(100dvh-10rem)] space-y-2 overflow-y-auto rounded-md border border-border bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:right-4 lg:top-4 lg:block lg:max-h-none lg:border-0 lg:bg-card/90`}>
+          <Button variant="ghost" size="icon" className="float-right h-5 w-5 lg:hidden" onClick={() => setMobileView(false)} aria-label="Close view settings"><CloseIcon /></Button>
           <div className="text-muted-foreground">VIEW</div>
-          <div className="flex gap-1">{(["oblique", "side", "top"] as const).map((m) => <button key={m} onClick={() => cam(m)} className="rounded border border-border px-2 py-1 capitalize hover:text-primary">{m}</button>)}</div>
+          <div className="flex gap-1">{(["oblique", "side", "top"] as const).map((m) => <Button variant="outline" size="sm" key={m} onClick={() => { cam(m); setMobileView(false); }} className="h-8 capitalize">{m}</Button>)}</div>
           <div className="text-muted-foreground">VERTICAL SCALE</div>
-          <div className="flex gap-1">{[1, 3, 6].map((n) => <button key={n} onClick={() => setEx(n)} className={`rounded border border-border px-2 py-1 ${exag === n ? "bg-primary text-primary-foreground" : ""}`}>{n}×</button>)}</div>
+          <div className="flex gap-1">{[1, 3, 6].map((n) => <Button variant={exag === n ? "default" : "outline"} size="sm" key={n} onClick={() => setEx(n)} className="h-8">{n}×</Button>)}</div>
           <div className="pt-1 text-muted-foreground">ALTITUDE SHELLS</div>
           {[...LAYERS].map((h, i) => ({ h, i })).reverse().map(({ h, i }) => <div key={i}>L{i} · {h}–{h + LAYER_H}m</div>)}
         </div>
         {column && (
-          <div className="absolute left-4 top-4 w-72 rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground">
-            <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><button onClick={() => setInspect(null)} className="text-muted-foreground hover:text-foreground" aria-label="Close">×</button></div>
+          <div className={`${mobileView ? "max-lg:hidden" : ""} absolute bottom-20 left-3 right-3 z-10 max-h-[min(48dvh,330px)] overflow-y-auto rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground max-lg:landscape:right-auto max-lg:landscape:w-[min(22rem,calc(100%-1.5rem))] lg:bottom-auto lg:left-4 lg:right-auto lg:top-4 lg:max-h-none lg:w-72`}>
+            <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setInspect(null); setInspectorClosed(true); }} aria-label="Close inspector"><CloseIcon /></Button></div>
             <div className="mt-1 truncate text-muted-foreground">H3 {inspectCell}</div>
             <div className="mt-2 space-y-1">
               {[...column].reverse().map(({ l, d }) => (
@@ -337,8 +372,14 @@ export function Workbench() {
           </div>
         )}
         {!ready && <div className="absolute inset-0 grid place-items-center font-mono text-sm text-muted-foreground">Loading globe…</div>}
-        <div className="pointer-events-none absolute bottom-4 left-4 rounded-md bg-card/90 p-3 font-mono text-[11px] text-card-foreground">
+        <div className="pointer-events-none absolute bottom-4 left-4 hidden max-w-[min(600px,calc(100%-2rem))] rounded-md bg-card/90 p-3 font-mono text-[11px] text-card-foreground lg:block">
           Solid prism = voxel held now · fading = next 3 slots · red column = no-fly zone · red ring = loss of separation · dashed line = drone's altitude above ground
+        </div>
+        <div className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 z-10 flex items-center gap-2 rounded-md border border-border bg-card/95 p-2 lg:hidden">
+          <Button size="icon" className="shrink-0" onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pause" : "Play"}>{playing ? <Pause /> : <Play />}</Button>
+          <input type="range" min={0} max={T_END} step={0.1} value={t} onChange={(e) => scrub(+e.target.value)} className="min-w-0 flex-1 accent-primary" aria-label="Time" />
+          <span className="w-8 shrink-0 text-right font-mono text-[11px] text-muted-foreground">{slot}s</span>
+          <Button variant="ghost" size="icon" className="shrink-0" onClick={() => restart(controller)} aria-label="Reset"><RotateCcw /></Button>
         </div>
       </main>
     </div>
