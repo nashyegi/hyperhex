@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
-import { ChevronDown, Layers3, Menu, Pause, Play, RotateCcw, X } from "lucide-react";
+import { Layers3, Menu, Pause, Play, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
@@ -65,7 +65,23 @@ export function Workbench() {
         orientation: { heading: 0, pitch: C.Math.toRadians(-38), roll: 0 },
       });
       viewer.current = v;
-      const observer = new ResizeObserver(() => { if (!v.isDestroyed()) v.resize(); });
+      let compact = false;
+      const observer = new ResizeObserver(() => {
+        if (v.isDestroyed() || !el.current) return;
+        v.resize();
+        const mobile = el.current.clientWidth < 1024;
+        if (mobile !== compact) {
+          compact = mobile;
+          if (mobile) v.camera.setView({
+            destination: C.Cartesian3.fromDegrees(ORIGIN.lng, ORIGIN.lat - 0.018, 3400),
+            orientation: { heading: 0, pitch: C.Math.toRadians(-57), roll: 0 },
+          });
+        }
+        for (const drone of sim.current?.drones ?? []) {
+          const entity = v.entities.getById(drone.id);
+          if (entity?.label) entity.label.show = !mobile;
+        }
+      });
       observer.observe(el.current);
       observerRef.current = observer;
       const h = new C.ScreenSpaceEventHandler(v.scene.canvas);
