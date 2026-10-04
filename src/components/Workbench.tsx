@@ -3,7 +3,7 @@ import { cellToBoundary, gridDisk } from "h3-js";
 import { Layers3, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
+  alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, FLEET_OPTIONS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
 } from "@/lib/hyperhex";
 
@@ -43,13 +43,15 @@ export function Workbench() {
   const [exag, setExag] = useState(3);
   const ex = useRef(3);
   const X = (m: number) => m * ex.current;
-  const bench = useMemo(() => benchmark(8), []);
+  const [fleet, setFleet] = useState(12);
+  const fleetRef = useRef(12);
+  const bench = useMemo(() => benchmark(8, fleet), [fleet]);
   const [inspect, setInspect] = useState<string | null>(null);
   const [inspectorClosed, setInspectorClosed] = useState(false);
   const [mobilePanel, setMobilePanel] = useState(false);
   const [mobileView, setMobileView] = useState(false);
 
-  if (!sim.current) sim.current = buildScenario(controller);
+  if (!sim.current) sim.current = buildScenario(controller, fleetRef.current);
 
   useEffect(() => {
     let dead = false;
@@ -196,11 +198,12 @@ export function Workbench() {
   const restart = (c: Controller) => {
     const v = viewer.current;
     v?.entities.removeAll(); voxelEntities.current = [];
-    sim.current = buildScenario(c); tRef.current = 0; setT(0);
+    sim.current = buildScenario(c, fleetRef.current); tRef.current = 0; setT(0);
     if (v) drawStatic();
     force((x) => x + 1);
   };
   const pick = (c: Controller) => { setController(c); restart(c); };
+  const pickFleet = (n: number) => { fleetRef.current = n; setFleet(n); setInspect(null); restart(controller); };
   const setEx = (n: number) => { ex.current = n; setExag(n); refreshPaths(); };
   const cam = (mode: "oblique" | "side" | "top") => {
     const C = (window as any).Cesium, v = viewer.current; if (!v) return;
@@ -253,6 +256,13 @@ export function Workbench() {
             ))}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">{ctl.blurb}</p>
+          <p className="mb-2 mt-4 font-mono text-[10px] uppercase text-muted-foreground">Flight density · transit UAVs (+3 stack demo)</p>
+          <div className="grid grid-cols-5 gap-1 rounded-md bg-secondary p-1">
+            {FLEET_OPTIONS.map((n) => (
+              <Button key={n} variant={fleet === n ? "default" : "ghost"} size="sm" onClick={() => pickFleet(n)} className="px-1 font-mono">{n}</Button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">All departures share the same ~72 s window, so more flights means denser airspace.</p>
         </div>
 
         <div className="grid grid-cols-3 gap-px border-b border-border bg-border font-mono">
