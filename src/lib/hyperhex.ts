@@ -272,16 +272,24 @@ export function stateAt(d: Drone, t: number): State | null {
 const COLORS = ["#f59e0b", "#22d3ee", "#a3e635", "#f472b6", "#fb7185", "#c084fc", "#facc15", "#34d399", "#60a5fa", "#fdba74", "#5eead4", "#e879f9"];
 export const cellCenter = (c: string) => { const [lat, lng] = cellToLatLng(c); return { lat, lng }; };
 
-export function buildScenario(controller: Controller = "hyperhex") {
+export const FLEET_OPTIONS = [12, 24, 36, 48, 72];
+const colorFor = (i: number) => COLORS[i] ?? `hsl(${Math.round((i * 137.508) % 360)} 85% 60%)`;
+
+export function buildScenario(controller: Controller = "hyperhex", fleet = 12) {
   const center = latLngToCell(ORIGIN.lat, ORIGIN.lng, RES);
-  const ring = gridDisk(center, 6).filter((c) => gridDistance(center, c) === 6);
+  const ringOf = (r: number) => gridDisk(center, r).filter((c) => gridDistance(center, c) === r);
+  const rings = [ringOf(6), ringOf(5), ringOf(7)];
+  const ring = rings[0]!;
   const n = ring.length;
   const drones: Drone[] = [];
-  for (let i = 0; i < 12; i++) {
-    const a = Math.floor((i * n) / 12 + (i % 3)) % n, b = (a + Math.floor(n / 2) + ((i * 5) % 7) - 3 + n) % n;
-    const pa = cellCenter(ring[a]!), pb = cellCenter(ring[b]!);
+  // Departures always span the same ~18-slot window, so more flights = higher traffic density.
+  for (let i = 0; i < fleet; i++) {
+    const R = rings[Math.floor(i / 12) % 3]!, rn = R.length, k = i % 12, wave = Math.floor(i / 12);
+    const a = (Math.floor((k * rn) / 12 + (k % 3)) + wave * 2) % rn;
+    const b = (a + Math.floor(rn / 2) + ((i * 5) % 7) - 3 + rn) % rn;
+    const pa = cellCenter(R[a]!), pb = cellCenter(R[b]!);
     const bearing = (Math.atan2(pb.lng - pa.lng, pb.lat - pa.lat) * 180) / Math.PI + 180; // 0..360
-    drones.push({ id: `UAV-${String(i + 1).padStart(2, "0")}`, color: COLORS[i]!, from: ring[a]!, to: ring[b]!, start: Math.floor(i * 1.5),
+    drones.push({ id: `UAV-${String(i + 1).padStart(2, "0")}`, color: colorFor(i), from: R[a]!, to: R[b]!, start: Math.floor((i * 18) / fleet),
       layer: Math.floor(bearing / 120) % LAYERS.length, path: [], intent: [], replans: 0 });
   }
   // Demo "triple stack": two flights share one corridor on the low and high shells while a third
@@ -308,10 +316,10 @@ export function findStacks(drones: Drone[]): Stack[] {
 }
 
 /** Headless run of the same scenario with a TFR at `tfrAt`, for controller comparison. */
-export function benchmark(tfrAt = 8): Record<Controller, Metrics> {
+export function benchmark(tfrAt = 8, fleet = 12): Record<Controller, Metrics> {
   const out = {} as Record<Controller, Metrics>;
   for (const c of CONTROLLERS) {
-    const s = buildScenario(c.id);
+    const s = buildScenario(c.id, fleet);
     s.air.injectNoFly(s.center, 1, s.drones, tfrAt);
     out[c.id] = s.air.metrics(s.drones);
   }
