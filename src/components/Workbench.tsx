@@ -353,7 +353,10 @@ export function Workbench() {
       <main className="relative min-w-0 flex-1">
         <div ref={el} className="absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 z-10 flex items-start justify-between gap-2 lg:hidden">
-          <Button variant="secondary" size="sm" className="shrink-0 border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls"><Menu /> Controls</Button>
+          <div className="flex shrink-0 flex-col gap-2">
+            <img src={logoAsset.url} alt="HyperHex" className="h-7 w-auto drop-shadow" />
+            <Button variant="secondary" size="sm" className="w-fit border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls"><Menu /> Controls</Button>
+          </div>
           <div className="flex min-w-0 items-center gap-2">
             <span className="truncate rounded border border-border bg-card/95 px-2 py-1.5 font-mono text-[10px] text-primary">t{String(slot).padStart(3, "0")} · {airborne} air · {m.conflicts} conflicts</span>
             <Button variant="secondary" size="icon" className="shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
