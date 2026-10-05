@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep separate transparent logo assets for dark panels and the mobile map overlay; select by placement so each remains legible on its actual background.
