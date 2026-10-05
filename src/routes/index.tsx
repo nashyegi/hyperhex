@@ -5,10 +5,10 @@ export const Route = createFileRoute("/")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "HyperHex — 4D Airspace Reservation Workbench" },
-      { name: "description", content: "Simulate 4D hexagonal airspace reservations, conflicts and replanning for autonomous drones." },
-      { property: "og:title", content: "HyperHex — 4D Airspace Reservation Workbench" },
-      { property: "og:description", content: "H3 hex voxels × altitude × time: watch drones reserve, conflict and replan." },
+      { title: "HyperHex — Low-Altitude Drone Corridors" },
+      { name: "description", content: "Simulate 4D hexagonal drone corridors for UTM: low-altitude flight space shared by autonomous drones across hex tiles, altitude layers and time." },
+      { property: "og:title", content: "HyperHex — Low-Altitude Drone Corridors" },
+      { property: "og:description", content: "Hex tiles × altitude × time: watch drones share low-altitude corridors, deconflict and replan." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
