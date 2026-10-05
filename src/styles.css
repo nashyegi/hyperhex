@@ -66,6 +66,7 @@
 
 :root {
   --radius: 0.375rem;
+  --mobile-browser-surface: oklch(0.99 0 0);
   --background: oklch(0.17 0.02 250);
   --foreground: oklch(0.95 0.01 250);
   --card: oklch(0.21 0.02 250);
@@ -143,5 +144,18 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+@media (max-width: 1023px) {
+  html,
+  body {
+    background-color: var(--mobile-browser-surface);
+    color-scheme: light;
+  }
+
+  .mobile-safe-frame {
+    background-color: var(--mobile-browser-surface);
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 }
