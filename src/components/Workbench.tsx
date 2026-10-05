@@ -244,7 +244,7 @@ export function Workbench() {
       <aside className={`${mobilePanel ? "flex" : "hidden"} absolute inset-0 z-30 w-full flex-col overflow-y-auto border-r border-border bg-background pb-8 lg:static lg:flex lg:w-[400px] lg:shrink-0 lg:pb-0`}>
         <header className="border-b border-border p-5">
           <Button variant="ghost" size="icon" className="float-right lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
-          <img src={logoAsset.url} alt="HyperHex" className="h-9 w-auto" />
+          <img src={logoAsset.url} alt="HyperHex" className="block w-full max-w-[340px] h-auto" />
           <p className="mt-3 font-mono text-xs uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
           <h1 className="mt-1 font-display text-2xl font-semibold">Low-Altitude Drone Corridors</h1>
           <p className="mt-2 text-sm text-muted-foreground">Shared low-altitude flying space for drones: H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted with safe-interval corridor planning.</p>
