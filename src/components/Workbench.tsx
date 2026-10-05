@@ -264,7 +264,7 @@ export function Workbench() {
               <Button key={n} variant={fleet === n ? "default" : "ghost"} size="sm" onClick={() => pickFleet(n)} className="px-1 font-mono">{n}</Button>
             ))}
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">All departures share the same ~72 s window, so more flights means denser airspace.</p>
+          <p className="mt-2 text-xs text-muted-foreground">All departures share the same ~72 s window, so more flights means busier corridors.</p>
         </div>
 
         <div className="grid grid-cols-3 gap-px border-b border-border bg-border font-mono">
