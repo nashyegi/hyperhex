@@ -3,6 +3,7 @@ import { cellToBoundary, gridDisk } from "h3-js";
 import { Layers3, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/hyperhex-logo-amber.png.asset.json";
+import mobileLogoAsset from "@/assets/hyperhex-logo-mobile.png.asset.json";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, FLEET_OPTIONS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
@@ -354,7 +355,7 @@ export function Workbench() {
         <div ref={el} className="absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 z-10 flex items-start justify-between gap-2 lg:hidden">
           <div className="flex shrink-0 flex-col gap-2">
-            <img src={logoAsset.url} alt="HyperHex" className="h-7 w-auto drop-shadow" />
+            <img src={mobileLogoAsset.url} alt="HyperHex" className="h-8 w-auto" />
             <Button variant="secondary" size="sm" className="w-fit border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls"><Menu /> Controls</Button>
           </div>
           <div className="flex min-w-0 items-center gap-2">
