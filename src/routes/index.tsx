@@ -11,6 +11,8 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Hex tiles × altitude × time: watch drones share low-altitude corridors, deconflict and replan." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "theme-color", content: "#fcfcfc", media: "(max-width: 1023px)" },
+      { name: "color-scheme", content: "light", media: "(max-width: 1023px)" },
     ],
   }),
   component: Workbench,

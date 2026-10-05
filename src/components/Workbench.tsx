@@ -241,7 +241,7 @@ export function Workbench() {
   const column = !inspectorClosed && inspectCell ? LAYERS.map((_, l) => ({ l, d: s.drones.find((d) => { const st = stateAt(d, slot); return st && st.cell === inspectCell && st.layer === l; }) })) : null;
 
   return (
-    <div className="relative flex h-dvh w-full overflow-hidden bg-background text-foreground">
+    <div className="mobile-safe-frame relative flex h-dvh w-full overflow-hidden bg-background text-foreground">
       <aside className={`${mobilePanel ? "flex" : "hidden"} absolute inset-0 z-30 w-full flex-col overflow-y-auto border-r border-border bg-background pb-8 lg:static lg:flex lg:w-[400px] lg:shrink-0 lg:pb-0`}>
         <header className="border-b border-border p-5">
           <Button variant="ghost" size="icon" className="float-right lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
@@ -353,13 +353,10 @@ export function Workbench() {
       </aside>
       <main className="relative min-w-0 flex-1">
         <div ref={el} className="absolute inset-0" />
-        <div className="absolute left-3 right-3 top-3 z-10 flex items-start justify-between gap-2 lg:hidden">
-          <div className="flex shrink-0 flex-col gap-2">
-            <img src={mobileLogoAsset.url} alt="HyperHex" className="h-8 w-auto" />
-            <Button variant="secondary" size="sm" className="w-fit border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls"><Menu /> Controls</Button>
-          </div>
+        <div className="absolute left-3 right-3 top-3 z-10 flex items-center justify-between gap-2 lg:hidden">
+          <img src={mobileLogoAsset.url} alt="HyperHex" className="h-8 w-auto shrink-0" />
           <div className="flex min-w-0 items-center gap-2">
-            <span className="truncate rounded border border-border bg-card/95 px-2 py-1.5 font-mono text-[10px] text-primary">t{String(slot).padStart(3, "0")} · {airborne} air · {m.conflicts} conflicts</span>
+            <Button variant="secondary" size="icon" className="shrink-0 border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls" title="Controls"><Menu /></Button>
             <Button variant="secondary" size="icon" className="shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
           </div>
         </div>
@@ -373,7 +370,7 @@ export function Workbench() {
           {[...LAYERS].map((h, i) => ({ h, i })).reverse().map(({ h, i }) => <div key={i}>L{i} · {h}–{h + LAYER_H}m</div>)}
         </div>
         {column && (
-          <div className={`${mobileView ? "max-lg:hidden" : ""} absolute bottom-20 left-3 right-3 z-10 max-h-[min(48dvh,330px)] overflow-y-auto rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground max-lg:landscape:right-auto max-lg:landscape:w-[min(22rem,calc(100%-1.5rem))] lg:bottom-auto lg:left-4 lg:right-auto lg:top-4 lg:max-h-none lg:w-72`}>
+          <div className={`${mobileView ? "max-lg:hidden" : ""} absolute bottom-28 left-3 right-3 z-10 max-h-[min(48dvh,330px)] overflow-y-auto rounded-md border border-primary/60 bg-card/95 p-3 font-mono text-[11px] text-card-foreground max-lg:landscape:right-auto max-lg:landscape:w-[min(22rem,calc(100%-1.5rem))] lg:bottom-auto lg:left-4 lg:right-auto lg:top-4 lg:max-h-none lg:w-72`}>
             <div className="flex items-center justify-between"><span className="text-primary">TILE INSPECTOR · t{String(slot).padStart(3, "0")}</span><Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setInspect(null); setInspectorClosed(true); }} aria-label="Close inspector"><CloseIcon /></Button></div>
             <div className="mt-1 truncate text-muted-foreground">H3 {inspectCell}</div>
             <div className="mt-2 space-y-1">
@@ -391,11 +388,14 @@ export function Workbench() {
         <div className="pointer-events-none absolute bottom-4 left-4 hidden max-w-[min(600px,calc(100%-2rem))] rounded-md bg-card/90 p-3 font-mono text-[11px] text-card-foreground lg:block">
           Solid prism = voxel held now · fading = next 3 slots · red column = no-fly zone · red ring = loss of separation · dashed line = drone's altitude above ground
         </div>
-        <div className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 z-10 flex items-center gap-2 rounded-md border border-border bg-card/95 p-2 lg:hidden">
+        <div className="absolute bottom-3 left-3 right-3 z-10 lg:hidden">
+          <div aria-label="Flight status" className="mb-1.5 w-fit rounded border border-border bg-card/95 px-2 py-1.5 font-mono text-[10px] text-primary">t{String(slot).padStart(3, "0")} · {airborne} air · {m.conflicts} conflicts</div>
+          <div className="flex items-center gap-2 rounded-md border border-border bg-card/95 p-2">
           <Button size="icon" className="shrink-0" onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pause" : "Play"}>{playing ? <Pause /> : <Play />}</Button>
           <input type="range" min={0} max={T_END} step={0.1} value={t} onChange={(e) => scrub(+e.target.value)} className="min-w-0 flex-1 accent-primary" aria-label="Time" />
           <span className="w-8 shrink-0 text-right font-mono text-[11px] text-muted-foreground">{slot}s</span>
           <Button variant="ghost" size="icon" className="shrink-0" onClick={() => restart(controller)} aria-label="Reset"><RotateCcw /></Button>
+          </div>
         </div>
       </main>
     </div>
