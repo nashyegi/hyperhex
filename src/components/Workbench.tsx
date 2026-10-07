@@ -251,11 +251,12 @@ export function Workbench() {
               <a href="mailto:yegireddi.naresh@gmail.com" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Mail className="h-3 w-3 shrink-0" />yegireddi.naresh@gmail.com</a>
             </div>
           </div>
-          <img src={logoAsset} alt="HyperHex" className="mt-2.5 block h-auto w-full max-w-[210px]" />
-          <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
-          <h1 className="mt-1 font-display text-xl font-semibold leading-tight">Low-Altitude Drone Corridors</h1>
-          <p className="mt-1.5 text-xs leading-snug text-muted-foreground">Shared low-altitude flying space for drones: H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted with safe-interval corridor planning.</p>
+          <img src={logoAsset} alt="HyperHex" className="mt-2 block h-auto w-full max-w-[176px]" />
+          <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
+          <h1 className="mt-0.5 font-display text-xl font-semibold leading-tight">Low-Altitude Drone Corridors</h1>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted by safe-interval corridor planning.</p>
         </header>
+
 
 
         <div className="border-b border-border p-4">
@@ -277,10 +278,11 @@ export function Workbench() {
 
         <div className="grid grid-cols-3 gap-px border-b border-border bg-border font-mono">
           {([["SLOT", slot], ["AIRBORNE", airborne], ["CONFLICTS", m.conflicts], ["DELAY (slots)", m.delay], ["REPLANS", m.replans], ["LEDGER", m.ledger]] as const).map(([k, val]) => (
-            <div key={k} className="bg-background p-3">
+            <div key={k} className="bg-background px-3 py-2">
               <div className="text-[10px] text-muted-foreground">{k}</div>
-              <div className={`text-lg ${k === "CONFLICTS" && m.conflicts > 0 ? "text-destructive" : "text-primary"}`}>{val}</div>
+              <div className={`text-base leading-tight ${k === "CONFLICTS" && m.conflicts > 0 ? "text-destructive" : "text-primary"}`}>{val}</div>
             </div>
+
           ))}
         </div>
 
