@@ -16,7 +16,7 @@ Naresh Yegireddi — yegireddi.naresh@gmail.com
 
 ## Patent notice
 
-The copyright holder reserves all patent and other intellectual-property rights not expressly granted under the PolyForm Noncommercial License 1.0.0. No license is granted to any patent application or patent claiming the HyperHex 4D hexagonal airspace reservation methods (including lazy hexagonal-prism graph expansion, sparse time-interval reservation ledocks, SIPP-based planning, directed-edge reservation, hierarchical multi-resolution planning, or bounded local reactive repair) except the patent license expressly granted in the [Patent License](#patent-license) section below, which applies only to noncommercial use. Any commercial practice of such methods requires an express written patent license from the copyright holder.
+The copyright holder reserves all patent and other intellectual-property rights not expressly granted under the PolyForm Noncommercial License 1.0.0. No license is granted to any patent application or patent claiming the HyperHex 4D hexagonal airspace reservation methods (including lazy hexagonal-prism graph expansion, sparse time-interval reservation ledgers, SIPP-based planning, directed-edge reservation, hierarchical multi-resolution planning, or bounded local reactive repair) except the patent license expressly granted in the [Patent License](#patent-license) section below, which applies only to noncommercial use. Any commercial practice of such methods requires an express written patent license from the copyright holder.
 
 ---
 
