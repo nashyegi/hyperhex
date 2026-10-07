@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
 import { Github, Layers3, Mail, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoAsset from "@/assets/hyperhex-logo-v2.png.asset.json";
-import mobileLogoAsset from "@/assets/hyperhex-logo-v2.png.asset.json";
+import logoAsset from "@/assets/hyperhex-logo-v3.png.asset.json";
+import mobileLogoAsset from "@/assets/hyperhex-logo-v3.png.asset.json";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, FLEET_OPTIONS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
