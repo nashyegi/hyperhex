@@ -3,7 +3,7 @@ import { cellToBoundary, gridDisk } from "h3-js";
 import { Github, Layers3, Mail, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/hyperhex-hd-logo.png";
-import mobileLogoAsset from "@/assets/hyperhex-logo-mobile.png.asset.json";
+import mobileLogoAsset from "@/assets/hyperhex-logo-amber.png.asset.json";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, FLEET_OPTIONS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
