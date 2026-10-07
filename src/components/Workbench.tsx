@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
-import { Layers3, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
+import { Github, Layers3, Mail, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoAsset from "@/assets/hyperhex-logo-amber.png.asset.json";
+import logoAsset from "@/assets/hyperhex-hd-logo.png";
 import mobileLogoAsset from "@/assets/hyperhex-logo-mobile.png.asset.json";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, FLEET_OPTIONS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
@@ -245,7 +245,15 @@ export function Workbench() {
       <aside className={`${mobilePanel ? "flex" : "hidden"} absolute inset-0 z-30 w-full flex-col overflow-y-auto border-r border-border bg-background pb-8 lg:static lg:flex lg:w-[400px] lg:shrink-0 lg:pb-0`}>
         <header className="border-b border-border p-5">
           <Button variant="ghost" size="icon" className="float-right lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
-          <img src={logoAsset.url} alt="HyperHex" className="block w-full max-w-[340px] h-auto" />
+          <img src={logoAsset} alt="HyperHex" className="block w-full max-w-[340px] h-auto" />
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 font-mono text-[11px] text-foreground transition-colors hover:border-primary hover:text-primary">
+              <Github className="h-3.5 w-3.5" />nashyegi/hyperhex
+            </a>
+            <a href="mailto:yegireddi.naresh@gmail.com" className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 font-mono text-[11px] text-foreground transition-colors hover:border-primary hover:text-primary">
+              <Mail className="h-3.5 w-3.5" />yegireddi.naresh@gmail.com
+            </a>
+          </div>
           <p className="mt-3 font-mono text-xs uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
           <h1 className="mt-1 font-display text-2xl font-semibold">Low-Altitude Drone Corridors</h1>
           <p className="mt-2 text-sm text-muted-foreground">Shared low-altitude flying space for drones: H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted with safe-interval corridor planning.</p>
