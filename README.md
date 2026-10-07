@@ -31,18 +31,17 @@ npm run dev
 
 ## License
 
-HyperHex is © 2026 Naresh Yegireddi and released under the
-[PolyForm Noncommercial License 1.0.0](LICENSE.md) — see [`LICENSE.md`](LICENSE.md)
-and [`NOTICE.md`](NOTICE.md).
+HyperHex is © 2026 Naresh Yegireddi and released as open source under the
+[GNU Affero General Public License v3.0](LICENSE.md) (AGPL-3.0-only) — see
+[`LICENSE.md`](LICENSE.md) and [`NOTICE.md`](NOTICE.md).
 
-- **Free for noncommercial use:** academic research, education, personal study,
-  experimentation, and use by universities, public research organizations,
-  governments, and nonprofits. Forks for these purposes are welcome.
-- **Commercial use requires a license:** any commercial use, production
-  deployment, internal business use, or commercializing a fork of HyperHex
-  requires a separate written commercial license from the copyright holder.
-  All patent and other intellectual-property rights not expressly granted are
-  reserved.
+- **Free and open:** students, educators, researchers, and anyone else may use,
+  study, modify, and fork HyperHex. Forks and contributions are welcome.
+- **Share alike:** if you distribute a modified version or run it as a network
+  service, you must publish your modified source under the AGPL.
+- **Commercial license available:** organizations that want to use HyperHex in
+  proprietary products or services without AGPL obligations can obtain a
+  separate commercial license.
 
 **Commercial licensing, patents, and partnership inquiries:**
 Naresh Yegireddi — yegireddi.naresh@gmail.com
