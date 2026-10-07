@@ -243,21 +243,21 @@ export function Workbench() {
   return (
     <div className="mobile-safe-frame relative flex h-dvh w-full overflow-hidden bg-background text-foreground">
       <aside className={`${mobilePanel ? "flex" : "hidden"} absolute inset-0 z-30 w-full flex-col overflow-y-auto border-r border-border bg-background pb-8 lg:static lg:flex lg:w-[400px] lg:shrink-0 lg:pb-0`}>
-        <header className="border-b border-border p-5">
-          <Button variant="ghost" size="icon" className="float-right lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
-          <img src={logoAsset} alt="HyperHex" className="block w-full max-w-[340px] h-auto" />
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 font-mono text-[11px] text-foreground transition-colors hover:border-primary hover:text-primary">
-              <Github className="h-3.5 w-3.5" />nashyegi/hyperhex
-            </a>
-            <a href="mailto:yegireddi.naresh@gmail.com" className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 font-mono text-[11px] text-foreground transition-colors hover:border-primary hover:text-primary">
-              <Mail className="h-3.5 w-3.5" />yegireddi.naresh@gmail.com
-            </a>
+        <header className="border-b border-border px-5 pb-4 pt-2.5">
+          <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
+            <Button variant="ghost" size="icon" className="-ml-2 h-6 w-6 lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
+            <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-0.5">
+              <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Github className="h-3 w-3 shrink-0" />nashyegi/hyperhex</a>
+              <a href="mailto:yegireddi.naresh@gmail.com" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Mail className="h-3 w-3 shrink-0" />yegireddi.naresh@gmail.com</a>
+            </div>
           </div>
-          <p className="mt-3 font-mono text-xs uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
-          <h1 className="mt-1 font-display text-2xl font-semibold">Low-Altitude Drone Corridors</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Shared low-altitude flying space for drones: H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted with safe-interval corridor planning.</p>
+          <img src={logoAsset} alt="HyperHex" className="mt-2 block h-auto w-full max-w-[176px]" />
+          <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
+          <h1 className="mt-0.5 font-display text-xl font-semibold leading-tight">Low-Altitude Drone Corridors</h1>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted by safe-interval corridor planning.</p>
         </header>
+
+
 
         <div className="border-b border-border p-4">
           <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Controller</p>
@@ -278,10 +278,11 @@ export function Workbench() {
 
         <div className="grid grid-cols-3 gap-px border-b border-border bg-border font-mono">
           {([["SLOT", slot], ["AIRBORNE", airborne], ["CONFLICTS", m.conflicts], ["DELAY (slots)", m.delay], ["REPLANS", m.replans], ["LEDGER", m.ledger]] as const).map(([k, val]) => (
-            <div key={k} className="bg-background p-3">
+            <div key={k} className="bg-background px-3 py-2">
               <div className="text-[10px] text-muted-foreground">{k}</div>
-              <div className={`text-lg ${k === "CONFLICTS" && m.conflicts > 0 ? "text-destructive" : "text-primary"}`}>{val}</div>
+              <div className={`text-base leading-tight ${k === "CONFLICTS" && m.conflicts > 0 ? "text-destructive" : "text-primary"}`}>{val}</div>
             </div>
+
           ))}
         </div>
 
@@ -362,13 +363,16 @@ export function Workbench() {
       <main className="relative min-w-0 flex-1">
         <div ref={el} className="absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 z-10 flex items-center justify-between gap-2 lg:hidden">
-          <img src={mobileLogoAsset.url} alt="HyperHex" className="h-8 w-auto shrink-0" />
-          <div className="flex min-w-0 items-center gap-2">
-            <Button variant="secondary" size="icon" className="shrink-0 border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls" title="Controls"><Menu /></Button>
-            <Button variant="secondary" size="icon" className="shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
+          <img src={mobileLogoAsset.url} alt="HyperHex" className="h-6 w-auto shrink-0" />
+          <div className="flex min-w-0 items-center gap-1.5">
+            <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" aria-label="GitHub repository" className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-card/95 text-card-foreground"><Github className="h-3.5 w-3.5" /></a>
+            <a href="mailto:yegireddi.naresh@gmail.com" aria-label="Email the maintainer" className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-card/95 text-card-foreground"><Mail className="h-3.5 w-3.5" /></a>
+            <Button variant="secondary" size="icon" className="h-7 w-7 shrink-0 border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls" title="Controls"><Menu /></Button>
+            <Button variant="secondary" size="icon" className="h-7 w-7 shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
           </div>
         </div>
-        <div className={`${mobileView ? "block" : "hidden"} absolute right-3 top-14 z-20 max-h-[calc(100dvh-10rem)] space-y-2 overflow-y-auto rounded-md border border-border bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:right-4 lg:top-4 lg:block lg:max-h-none lg:border-0 lg:bg-card/90`}>
+        <div className={`${mobileView ? "block" : "hidden"} absolute right-3 top-12 z-20 max-h-[calc(100dvh-10rem)] space-y-2 overflow-y-auto rounded-md border border-border bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:right-4 lg:top-4 lg:block lg:max-h-none lg:border-0 lg:bg-card/90`}>
+
           <Button variant="ghost" size="icon" className="float-right h-5 w-5 lg:hidden" onClick={() => setMobileView(false)} aria-label="Close view settings"><CloseIcon /></Button>
           <div className="text-muted-foreground">VIEW</div>
           <div className="flex gap-1">{(["oblique", "side", "top"] as const).map((m) => <Button variant="outline" size="sm" key={m} onClick={() => { cam(m); setMobileView(false); }} className="h-8 capitalize">{m}</Button>)}</div>
