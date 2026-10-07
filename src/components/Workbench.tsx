@@ -245,11 +245,11 @@ export function Workbench() {
       <aside className={`${mobilePanel ? "flex" : "hidden"} absolute inset-0 z-30 w-full flex-col overflow-y-auto border-r border-border bg-background pb-8 lg:static lg:flex lg:w-[400px] lg:shrink-0 lg:pb-0`}>
         <header className="border-b border-border px-5 pb-4 pt-2.5">
           <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
-            <Button variant="ghost" size="icon" className="-ml-2 h-6 w-6 lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
-            <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-0.5">
+            <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-3 gap-y-0.5">
               <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Github className="h-3 w-3 shrink-0" />nashyegi/hyperhex</a>
               <a href="mailto:yegireddi.naresh@gmail.com" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Mail className="h-3 w-3 shrink-0" />yegireddi.naresh@gmail.com</a>
             </div>
+            <Button variant="ghost" size="icon" className="ml-auto -mr-2 h-6 w-6 shrink-0 lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
           </div>
           <img src={logoAsset.url} alt="HyperHex" className="mt-3 block h-auto w-full max-w-[320px]" />
           <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
@@ -363,10 +363,12 @@ export function Workbench() {
       <main className="relative min-w-0 flex-1">
         <div ref={el} className="absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 z-10 flex items-center justify-between gap-2 lg:hidden">
-          <img src={mobileLogoAsset.url} alt="HyperHex" className="h-10 w-auto shrink-0" />
           <div className="flex min-w-0 items-center gap-1.5">
+            <img src={mobileLogoAsset.url} alt="HyperHex" className="h-10 w-auto shrink-0" />
             <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" aria-label="GitHub repository" className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-card/95 text-card-foreground"><Github className="h-3.5 w-3.5" /></a>
             <a href="mailto:yegireddi.naresh@gmail.com" aria-label="Email the maintainer" className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-border bg-card/95 text-card-foreground"><Mail className="h-3.5 w-3.5" /></a>
+          </div>
+          <div className="flex min-w-0 items-center gap-1.5">
             <Button variant="secondary" size="icon" className="h-7 w-7 shrink-0 border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls" title="Controls"><Menu /></Button>
             <Button variant="secondary" size="icon" className="h-7 w-7 shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
           </div>
