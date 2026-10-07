@@ -28,3 +28,21 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## License
+
+HyperHex is © 2026 Naresh Yegireddi and released under the
+[PolyForm Noncommercial License 1.0.0](LICENSE.md) — see [`LICENSE.md`](LICENSE.md)
+and [`NOTICE.md`](NOTICE.md).
+
+- **Free for noncommercial use:** academic research, education, personal study,
+  experimentation, and use by universities, public research organizations,
+  governments, and nonprofits. Forks for these purposes are welcome.
+- **Commercial use requires a license:** any commercial use, production
+  deployment, internal business use, or commercializing a fork of HyperHex
+  requires a separate written commercial license from the copyright holder.
+  All patent and other intellectual-property rights not expressly granted are
+  reserved.
+
+**Commercial licensing, patents, and partnership inquiries:**
+Naresh Yegireddi — yegireddi.naresh@gmail.com
