@@ -36,7 +36,8 @@ HyperHex is © 2026 Naresh Yegireddi and released as open source under the
 [`LICENSE.md`](LICENSE.md) and [`NOTICE.md`](NOTICE.md).
 
 - **Free and open:** students, educators, researchers, and anyone else may use,
-  study, modify, and fork HyperHex. Forks and contributions are welcome.
+  study, modify, and fork HyperHex. Forks are the intended path — see
+  [`CONTRIBUTING.md`](CONTRIBUTING.md).
 - **Share alike:** if you distribute a modified version or run it as a network
   service, you must publish your modified source under the AGPL.
 - **Commercial license available:** organizations that want to use HyperHex in

@@ -14,8 +14,12 @@ Licensing: HyperHex is dual-licensed.
    proprietary products or services, or otherwise cannot comply with the AGPL,
    a separate commercial license is available from the copyright holder.
 
-Contributions: to keep dual licensing possible, contributors may be asked to
-agree to a Contributor License Agreement before contributions are merged.
+Contributions: HyperHex does not accept outside contributions at this time.
+The project is offered for forking — you may copy, study, modify, and run your
+own version under the AGPL terms above, in your own space. Please do not open
+pull requests; they will be closed unreviewed. Because no outside code is
+merged, all copyright in this repository stays with the copyright holder, which
+is what keeps the commercial licensing option above available.
 
 Commercial licensing, patent, and partnership inquiries:
 Naresh Yegireddi — yegireddi.naresh@gmail.com
