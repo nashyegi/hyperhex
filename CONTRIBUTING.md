@@ -1,54 +1,72 @@
-# Contributing to HyperHex
+# Collaborating with HyperHex
 
-**Fork it. Don't send pull requests — not right now.**
+HyperHex is a maintainer-led research project exploring urban low-altitude drone
+corridors. Researchers, students, educators, nonprofit organizations, and developers
+are welcome to study the simulator, reproduce experiments, and build their own
+versions under the [AGPL-3.0-only license](LICENSE.md).
 
-HyperHex is offered so that students, educators, and researchers can take it
-apart and build on it in their own space. That is the whole point of the
-license: fork the repository, modify it freely, run it, teach with it, publish
-from it.
+## Current contribution policy
 
-## Forks are the supported path
+**Upstream pull requests are not accepted at this time.** Please develop code and
+documentation changes in your own fork rather than opening a pull request. Pull
+requests may be closed without review.
 
-Under the AGPL-3.0-only license (see [`LICENSE.md`](LICENSE.md)) you may:
+This policy keeps the upstream maintenance and contribution process under the
+maintainer's control. It does not prohibit forks, imply ownership of other people's
+work, or change rights granted by the AGPL. No contributor assignment or agreement
+is required merely to exercise the rights the license grants.
 
-- copy and fork the project,
-- study and modify any part of it,
-- run it privately or as a network service,
-- redistribute your modified version — provided you release your complete
-  modified source under the AGPL, as the license requires.
+## Ways to participate
 
-Nothing here asks you to assign rights, sign anything, or wait for review.
-Your fork is yours.
+- Report reproducible bugs or unclear documentation through repository issues.
+- Ask questions about the model, its assumptions, or experiment interpretation.
+- Share replication studies, teaching exercises, papers, and demonstrations.
+- Contact the maintainer about research partnerships or proposed collaboration.
 
-## Pull requests are not accepted at this time
+Issues are for discussion and reports, not a promise that a change will be
+implemented or merged. Sharing a fork or publication is appreciated and optional;
+there is no general obligation to contribute changes back upstream. Applicable
+source-availability obligations under the AGPL still apply.
 
-Please don't open pull requests, and don't be put off if existing ones are
-closed. This is not a judgement of the work — it is a deliberate choice by the
-copyright holder to keep all copyright in the repository in one place so that
-a separate commercial license can stay available (see
-[`NOTICE.md`](NOTICE.md)).
+## Reporting a bug
 
-The same reasoning applies to issues: use them for bug reports and questions
-about the research, not as a queue of changes to be merged.
+Include enough information for someone else to reproduce the behavior:
 
-## If you build something from a fork
+1. Commit or release, operating system, browser, and relevant runtime versions.
+2. Controller and transit-fleet selection, including the three additional stack
+   drones when reporting total fleet size.
+3. Whether a no-fly zone was injected and the exact injection slot.
+4. Steps to reproduce, expected behavior, and observed behavior.
+5. Relevant event-log entries, console output, or screenshots without personal or
+   sensitive information.
 
-You are welcome to say so. A note to the copyright holder —
-yegireddi.naresh@gmail.com — with a link to your fork, paper, or demo is
-appreciated and completely optional. There is no obligation to upstream
-anything, and no expectation that you will.
+For a suspected security vulnerability, contact the maintainer privately at
+[yegireddi.naresh@gmail.com](mailto:yegireddi.naresh@gmail.com) rather than posting
+exploit details publicly. No response-time commitment is currently published.
 
-## Commercial use
+## Publishing work based on a fork
 
-Commercial use is not covered by the AGPL route described above. Organizations
-that want to embed HyperHex in a proprietary product or service, or that cannot
-comply with the AGPL, need a separate commercial license from the copyright
-holder. Academic, educational, and personal use does not.
+Identify the upstream commit, explain your modifications, and distinguish results
+from your fork from results of the upstream implementation. Retain required notices,
+including the author-attribution term under Section 7(b) of the license
+(see [NOTICE.md](NOTICE.md)), and comply with applicable AGPL distribution and
+remote-interaction obligations. Avoid presenting a modified fork as the official
+HyperHex release or implying maintainer endorsement.
 
-## License and patent questions
+For experiment reporting and software citation, see the
+[research guide](docs/research.md) and [CITATION.cff](CITATION.cff). A scholarly
+citation is requested, not imposed as an extra software-license condition.
 
-The AGPL grants a copyright license; it is not a statement about any patent
-position. If licensing terms, patents, or the commercial option are material to
-what you are planning, have qualified counsel read
-[`LICENSE.md`](LICENSE.md) and [`NOTICE.md`](NOTICE.md) before you rely on
-them.
+## Licensing and patent questions
+
+The AGPL permits commercial use as well as academic, nonprofit, educational, and
+personal use, subject to its terms. Those categories do not automatically create
+exceptions to its obligations. A separate commercial agreement is relevant when
+alternative permissions are needed, not simply because the user is a business.
+
+The AGPL also contains an explicit patent grant in Section 11. Read the
+[licensing notice](NOTICE.md) and the full [license](LICENSE.md), and seek qualified
+legal advice where patent or licensing questions are material to your work.
+
+**Maintainer:** Naresh Yegireddi,
+[yegireddi.naresh@gmail.com](mailto:yegireddi.naresh@gmail.com)
