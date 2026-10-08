@@ -8,7 +8,7 @@ The interactive small-scale demonstration — build a compact scenario that show
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://hyperhex.lovable.app
+**Live app**: https://hyperhex.dev
 
 ## Build with Lovable
 
