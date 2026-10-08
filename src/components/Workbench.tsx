@@ -376,7 +376,7 @@ export function Workbench() {
             <Button variant="secondary" size="icon" className="h-7 w-7 shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
           </div>
         </div>
-        <div className={`${mobileView ? "block" : "hidden"} absolute right-3 top-12 z-20 max-h-[calc(100dvh-10rem)] space-y-2 overflow-y-auto rounded-md border border-border bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:right-4 lg:top-4 lg:block lg:max-h-none lg:border-0 lg:bg-card/90`}>
+        <div className={`${mobileView ? "block" : "hidden"} absolute right-3 top-[6.5rem] z-20 max-h-[calc(100dvh-10rem)] space-y-2 overflow-y-auto rounded-md border border-border bg-card/95 p-3 font-mono text-[11px] text-card-foreground lg:right-4 lg:top-4 lg:block lg:max-h-none lg:border-0 lg:bg-card/90`}>
 
           <Button variant="ghost" size="icon" className="float-right h-5 w-5 lg:hidden" onClick={() => setMobileView(false)} aria-label="Close view settings"><CloseIcon /></Button>
           <div className="text-muted-foreground">VIEW</div>
