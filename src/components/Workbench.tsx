@@ -4,6 +4,7 @@ import { Github, Layers3, Mail, Menu, Pause, Play, RotateCcw, X as CloseIcon } f
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/hyperhex-logo-v3.png.asset.json";
 import mobileLogoAsset from "@/assets/hyperhex-logo-v3.png.asset.json";
+import previousLogoAsset from "@/assets/hyperhex-logo-amber.png.asset.json";
 import {
   alt, benchmark, buildScenario, cellCenter, findConflicts, findStacks, stateAt, CONTROLLERS, FLEET_OPTIONS, LAYERS, LAYER_H, SLOT_SEC, ORIGIN,
   type Controller, type Drone, type Airspace,
@@ -252,6 +253,7 @@ export function Workbench() {
             <Button variant="ghost" size="icon" className="ml-auto -mr-2 h-6 w-6 shrink-0 lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
           </div>
           <img src={logoAsset.url} alt="HyperHex" className="mt-3 block h-auto w-full max-w-[320px]" />
+          <img src={previousLogoAsset.url} alt="HyperHex previous logo" className="mt-2 block h-auto w-full max-w-[320px]" />
           <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">UTM · Drone Corridor Lab</p>
           <h1 className="mt-0.5 font-display text-xl font-semibold leading-tight">Low-Altitude Drone Corridors</h1>
           <p className="mt-1 text-xs leading-snug text-muted-foreground">H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted by safe-interval corridor planning.</p>
