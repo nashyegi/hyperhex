@@ -67,6 +67,7 @@
 :root {
   --radius: 0.375rem;
   --mobile-browser-surface: oklch(0.99 0 0);
+  --mobile-overlay-ink: oklch(0.22 0.02 250);
   --background: oklch(0.17 0.02 250);
   --foreground: oklch(0.95 0.01 250);
   --card: oklch(0.21 0.02 250);
