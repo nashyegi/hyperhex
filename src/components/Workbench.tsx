@@ -363,11 +363,11 @@ export function Workbench() {
       <main className="relative min-w-0 flex-1">
         <div ref={el} className="absolute inset-0" />
         <div className="absolute left-3 right-3 top-3 z-10 flex items-center justify-between gap-2 lg:hidden">
-          <div className="flex min-w-0 flex-col">
+          <div className="relative flex min-w-0 flex-col">
             <img src={mobileLogoAsset.url} alt="HyperHex" className="h-auto max-h-10 w-auto min-w-0 max-w-[calc(100vw-96px)] object-contain" />
-            <div className="mt-1.5 flex items-center justify-center gap-6">
-              <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" aria-label="GitHub repository" className="grid h-8 w-8 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><Github className="h-4 w-4" /></a>
-              <a href="mailto:yegireddi.naresh@gmail.com" aria-label="Email the maintainer" className="grid h-8 w-8 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><Mail className="h-4 w-4" /></a>
+            <div className="absolute left-0 right-0 top-full mt-0.5 flex items-center justify-center gap-1.5">
+              <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" aria-label="GitHub repository" className="grid h-6 w-6 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><Github className="h-4 w-4" /></a>
+              <a href="mailto:yegireddi.naresh@gmail.com" aria-label="Email the maintainer" className="grid h-6 w-6 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><Mail className="h-4 w-4" /></a>
             </div>
           </div>
           <div className="flex min-w-0 items-center gap-1.5">
