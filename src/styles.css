@@ -49,6 +49,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
+  --color-mobile-overlay-ink: var(--mobile-overlay-ink);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -67,6 +68,7 @@
 :root {
   --radius: 0.375rem;
   --mobile-browser-surface: oklch(0.99 0 0);
+  --mobile-overlay-ink: oklch(0.22 0.02 250);
   --background: oklch(0.17 0.02 250);
   --foreground: oklch(0.95 0.01 250);
   --card: oklch(0.21 0.02 250);
