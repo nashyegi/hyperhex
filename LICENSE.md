@@ -1,6 +1,7 @@
-HyperHex — Copyright (C) 2026 Naresh Yegireddi
-Licensed under the GNU Affero General Public License v3.0 only (AGPL-3.0-only).
-Commercial licenses are available separately — see NOTICE.md.
+HyperHex, Copyright (C) 2026 Naresh Yegireddi
+Licensed under the GNU Affero General Public License v3.0 only (AGPL-3.0-only),
+plus an author-attribution term under Section 7(b). See "Additional Terms under
+Section 7(b)" at the end of this file and NOTICE.md.
 
 ```text
 GNU AFFERO GENERAL PUBLIC LICENSE
@@ -239,3 +240,27 @@ If your software can interact with users remotely through a computer network, yo
 
 You should also get your employer (if you work as a programmer) or school, if any, to sign a "copyright disclaimer" for the program, if necessary. For more information on this, and how to apply and follow the GNU AGPL, see <http://www.gnu.org/licenses/>.
 ```
+
+## Additional Terms under Section 7(b)
+
+The licensor supplements the License with the following additional term under
+Section 7(b) (preservation of author attributions):
+
+Each covered work, and each modified version, must preserve the following
+author attribution wherever legal notices, copyright notices, or author
+attributions are retained or displayed, including in the Appropriate Legal
+Notices of works containing it:
+
+> HyperHex: Urban Low-Altitude Drone Corridor Research Simulator.
+> Copyright (C) 2026 Naresh Yegireddi. https://github.com/nashyegi/hyperhex
+
+For a modified version with interactive user interfaces that display legal
+notices, copyright notices, or "About" information, this attribution must be
+included in a reasonably prominent location among those notices. For a modified
+version that offers its Corresponding Source to remote network users under
+Section 13, the offer must include this attribution.
+
+This term concerns the preservation of author attribution only. It grants no
+trademark rights in the HyperHex name or logo, does not require academic
+citation of related publications, and does not otherwise modify the permissions
+or obligations of the License.

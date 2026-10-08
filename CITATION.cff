@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: >-
+  If you use HyperHex in research or teaching, please cite this software and
+  identify the exact commit or release used. Citation is requested, not an
+  additional software-license condition.
+type: software
+title: "HyperHex: Urban Low-Altitude Drone Corridor Research Simulator"
+authors:
+  - family-names: Yegireddi
+    given-names: Naresh
+repository-code: "https://github.com/nashyegi/hyperhex"
+url: "https://hyperhex.dev"
+abstract: >-
+  HyperHex is a research prototype for exploring urban low-altitude drone
+  corridors using H3 geographic cells, altitude layers, and discrete time slots.
+  It combines interval-based reservations, safe-interval path planning, and an
+  interactive 3D workbench for synthetic controller comparisons and route-repair
+  experiments. It is not an operational drone-control system.
+keywords:
+  - urban low-altitude drone corridors
+  - geospatial indexing
+  - H3
+  - safe interval path planning
+  - four-dimensional reservations
+  - research simulation
+license: AGPL-3.0-only
