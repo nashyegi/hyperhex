@@ -370,7 +370,6 @@ export function Workbench() {
               <a href="mailto:yegireddi.naresh@gmail.com" aria-label="Email the maintainer" className="grid h-8 w-8 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><Mail className="h-4 w-4" /></a>
             </div>
           </div>
-          </div>
           <div className="flex min-w-0 items-center gap-1.5">
             <Button variant="secondary" size="icon" className="h-7 w-7 shrink-0 border border-border bg-card/95" onClick={() => setMobilePanel(true)} aria-label="Open controls" title="Controls"><Menu /></Button>
             <Button variant="secondary" size="icon" className="h-7 w-7 shrink-0 border border-border bg-card/95" onClick={() => setMobileView((v) => !v)} aria-label={mobileView ? "Close view settings" : "Open view settings"}><Layers3 /></Button>
