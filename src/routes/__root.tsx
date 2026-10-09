@@ -78,10 +78,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-                  { name: "author", content: "Lovable" },
-                  { property: "og:type", content: "website" },
+      { name: "author", content: "Naresh Yegireddi" },
+      { name: "creator", content: "Naresh Yegireddi" },
+      { name: "publisher", content: "Naresh Yegireddi" },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "HyperHex" },
+      { property: "article:author", content: "https://www.linkedin.com/in/nareshyegireddi" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -89,6 +92,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;600&display=swap" },
+      { rel: "author", href: "https://www.linkedin.com/in/nareshyegireddi" },
+      { rel: "me", href: "https://www.linkedin.com/in/nareshyegireddi" },
+      { rel: "me", href: "https://github.com/nashyegi" },
       { rel: "icon", href: "/favicon.png?v=xhexagon", type: "image/png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", type: "image/png" },
     ],
