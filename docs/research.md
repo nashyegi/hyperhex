@@ -135,4 +135,4 @@ as an extra licensing restriction.
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the current collaboration policy and
 [NOTICE.md](../NOTICE.md) for licensing and patent considerations. Direct research
 and partnership inquiries to
-[Naresh Yegireddi](mailto:yegireddi.naresh@gmail.com).
+[Naresh Yegireddi](mailto:contact@hyperhex.dev).

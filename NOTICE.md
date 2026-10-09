@@ -1,7 +1,7 @@
 # HyperHex licensing notice
 
 Copyright (C) 2026 Naresh Yegireddi
-Contact: [yegireddi.naresh@gmail.com](mailto:yegireddi.naresh@gmail.com)
+Contact: [contact@hyperhex.dev](mailto:contact@hyperhex.dev)
 
 HyperHex is an urban low-altitude drone corridor research simulator. This notice
 summarizes the project's licensing approach; it does not replace the

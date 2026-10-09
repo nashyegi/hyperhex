@@ -41,7 +41,7 @@ Include enough information for someone else to reproduce the behavior:
    sensitive information.
 
 For a suspected security vulnerability, contact the maintainer privately at
-[yegireddi.naresh@gmail.com](mailto:yegireddi.naresh@gmail.com) rather than posting
+[contact@hyperhex.dev](mailto:contact@hyperhex.dev) rather than posting
 exploit details publicly. No response-time commitment is currently published.
 
 ## Publishing work based on a fork
@@ -69,4 +69,4 @@ The AGPL also contains an explicit patent grant in Section 11. Read the
 legal advice where patent or licensing questions are material to your work.
 
 **Maintainer:** Naresh Yegireddi,
-[yegireddi.naresh@gmail.com](mailto:yegireddi.naresh@gmail.com)
+[contact@hyperhex.dev](mailto:contact@hyperhex.dev)
