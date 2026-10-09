@@ -12,6 +12,7 @@ Created and maintained by **Naresh Yegireddi**.
 
 [Live demonstration](https://hyperhex.dev) ·
 [Source repository](https://github.com/nashyegi/hyperhex) ·
+[Technical white paper](public/HyperHex_Technical_White_Paper.pdf) ·
 [Technical model](docs/technical-model.md) ·
 [Research and reproducibility](docs/research.md)
 
@@ -126,6 +127,7 @@ requirements for reporting experiments are documented in the
 
 | Guide | Contents |
 | --- | --- |
+| [Technical white paper](public/HyperHex_Technical_White_Paper.pdf) | The motivating concepts and proposed framework behind the simulator |
 | [Technical model and architecture](docs/technical-model.md) | Coordinates, reservations, controllers, metrics, and implementation limitations |
 | [Research and reproducibility](docs/research.md) | Experiment procedure, reporting checklist, citation, and publication status |
 | [Development and deployment](docs/development.md) | Local workflow, scripts, hosting boundaries, and external resources |

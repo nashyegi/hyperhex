@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cellToBoundary, gridDisk } from "h3-js";
-import { Github, Layers3, Mail, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
+import { FileDown, FileText, Github, Layers3, Mail, Menu, Pause, Play, RotateCcw, X as CloseIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/hyperhex-logo-amber.png.asset.json";
 import mobileLogoAsset from "@/assets/hyperhex-logo-amber-mobile-outlined.png.asset.json";
@@ -248,6 +248,7 @@ export function Workbench() {
             <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-3 gap-y-0.5">
               <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Github className="h-3 w-3 shrink-0" />nashyegi/hyperhex</a>
               <a href="mailto:contact@hyperhex.dev" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Mail className="h-3 w-3 shrink-0" />contact@hyperhex.dev</a>
+              <a href="/HyperHex_Technical_White_Paper.pdf" download className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><FileText className="h-3 w-3 shrink-0" />white paper</a>
             </div>
             <Button variant="ghost" size="icon" className="ml-auto -mr-2 h-6 w-6 shrink-0 lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
           </div>
@@ -368,6 +369,7 @@ export function Workbench() {
             <div className="absolute left-0 right-0 top-full mt-0.5 flex items-center justify-center gap-1.5">
               <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" aria-label="GitHub repository" className="grid h-6 w-6 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><Github className="h-4 w-4" /></a>
               <a href="mailto:contact@hyperhex.dev" aria-label="Email the maintainer" className="grid h-6 w-6 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><Mail className="h-4 w-4" /></a>
+              <a href="/HyperHex_Technical_White_Paper.pdf" download aria-label="Download the HyperHex technical white paper" className="grid h-6 w-6 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"><FileDown className="h-4 w-4" /></a>
             </div>
           </div>
           <div className="flex min-w-0 items-center gap-1.5">
