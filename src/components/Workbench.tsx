@@ -246,7 +246,7 @@ export function Workbench() {
         <header className="border-b border-border px-5 pb-4 pt-2.5">
           <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
             <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-3 gap-y-0.5">
-              <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Github className="h-3 w-3 shrink-0" />nashyegi/hyperhex</a>
+              <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Github className="h-3 w-3 shrink-0" />hyperhex</a>
               <a href="mailto:contact@hyperhex.dev" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Mail className="h-3 w-3 shrink-0" />contact@hyperhex.dev</a>
               <a href="/HyperHex_Technical_White_Paper.pdf" download className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><FileText className="h-3 w-3 shrink-0" />white paper</a>
             </div>
