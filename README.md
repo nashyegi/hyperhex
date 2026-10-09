@@ -172,4 +172,4 @@ materials retain their respective rights and license terms.
 The license text governs; this summary does not add restrictions or exceptions.
 
 **Research, licensing, and partnership inquiries:**
-Naresh Yegireddi, [yegireddi.naresh@gmail.com](mailto:yegireddi.naresh@gmail.com)
+Naresh Yegireddi, [contact@hyperhex.dev](mailto:contact@hyperhex.dev)
