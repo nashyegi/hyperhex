@@ -247,9 +247,9 @@ export function Workbench() {
           <div className="flex items-center gap-2 border-b border-border/60 pb-1.5">
             <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-3 gap-y-0.5">
               <a href="https://github.com/nashyegi/hyperhex" target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Github className="h-3 w-3 shrink-0" />hyperhex</a>
-              <a href="https://www.linkedin.com/in/nareshyegireddi" target="_blank" rel="noreferrer" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Linkedin className="h-3 w-3 shrink-0" />linkedin</a>
               <a href="mailto:contact@hyperhex.dev" className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><Mail className="h-3 w-3 shrink-0" />contact@hyperhex.dev</a>
               <a href="/HyperHex_Technical_White_Paper.pdf" download className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"><FileText className="h-3 w-3 shrink-0" />white paper</a>
+              <a href="https://www.linkedin.com/in/nareshyegireddi" target="_blank" rel="noreferrer" aria-label="Naresh Yegireddi on LinkedIn" className="inline-flex shrink-0 items-center leading-none text-muted-foreground transition-colors hover:text-primary"><Linkedin className="h-3 w-3" /></a>
             </div>
             <Button variant="ghost" size="icon" className="ml-auto -mr-2 h-6 w-6 shrink-0 lg:hidden" aria-label="Close controls" onClick={() => setMobilePanel(false)}><CloseIcon /></Button>
           </div>
