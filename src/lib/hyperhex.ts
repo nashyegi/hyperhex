@@ -11,6 +11,37 @@ export const LAYER_H = 30;
 export const SLOT_SEC = 4;
 export const MAX_T = 90;
 export const ORIGIN = { lat: 37.7793, lng: -122.4193 };
+
+/**
+ * Engine parameters. The H3 resolution is carried by the cells themselves (the engine only uses
+ * ring-1 neighbours), so it is chosen by the scenario; `RES` above is the workbench default.
+ *   slotSec        seconds per slot; one move (neighbour cell or adjacent layer) takes one slot,
+ *                  so cruise speed = neighbour spacing / slotSec.
+ *   maxT           planning horizon in slots after the start state.
+ *   maxExpansions  SIPP search budget per call.
+ *   maxWait        longest wait (slots) SIPP considers before one move.
+ *   bufferSlots    temporal buffer on node reservations: a node reserved over slots [a, b] blocks other
+ *                  drones over [a - bufferSlots, b + bufferSlots]. With 1, no drone may enter a node in the
+ *                  slot after another drone left it, which raises the guaranteed continuous-time
+ *                  separation from ~0.27 to ~0.87 of the neighbour spacing (see docs/experiments-e7.md).
+ *   contingencyHorizon  search horizon (slots) for evacuation / contingency landing.
+ */
+export type EngineConfig = {
+  slotSec: number;
+  maxT: number;
+  maxExpansions: number;
+  maxWait: number;
+  bufferSlots: number;
+  contingencyHorizon: number;
+};
+export const DEFAULT_CONFIG: EngineConfig = {
+  slotSec: SLOT_SEC,
+  maxT: MAX_T,
+  maxExpansions: 20000,
+  maxWait: 30,
+  bufferSlots: 0,
+  contingencyHorizon: 60,
+};
 const INF = Number.POSITIVE_INFINITY;
 
 export type Controller = "hyperhex" | "geofence" | "reactive";
@@ -26,6 +57,10 @@ export type Drone = {
   path: State[];      // executed / reserved trajectory, one state per slot
   intent: State[];    // reactive only: desired route (untimed order)
   replans: number;
+  /** Set when a closure fallback ended the mission early: landed at a contingency cell, or cancelled before departure. */
+  outcome?: "diverted" | "cancelled";
+  /** True when the drone was inside a newly closed cell and was routed out of it. */
+  evacuated?: boolean;
 };
 export type LogEntry = { t: number; kind: "plan" | "conflict" | "replan" | "nofly" | "fail" | "hold"; msg: string };
 type Interval = { a: number; b: number; owner: string };
@@ -35,6 +70,8 @@ const edgeKey = (a: string, b: string) => (a < b ? `${a}~${b}` : `${b}~${a}`);
 
 /** Sparse interval ledger: only contended resources are stored. */
 export class Ledger {
+  /** Node intervals are stored widened by `buffer` slots on each side (EngineConfig.bufferSlots). */
+  constructor(public buffer = 0) {}
   nodes = new Map<string, Interval[]>();
   edges = new Map<string, Interval[]>();
   private add(m: Map<string, Interval[]>, k: string, iv: Interval) {
@@ -46,7 +83,11 @@ export class Ledger {
     while (i < path.length) {
       const s = path[i]!; let j = i;
       while (j + 1 < path.length && path[j + 1]!.cell === s.cell && path[j + 1]!.layer === s.layer) j++;
-      this.add(this.nodes, nodeKey(s.cell, s.layer), { a: s.t, b: path[j]!.t, owner: id });
+      this.add(this.nodes, nodeKey(s.cell, s.layer), {
+        a: s.t - this.buffer,
+        b: path[j]!.t + this.buffer,
+        owner: id,
+      });
       if (j + 1 < path.length) {
         const n = path[j + 1]!;
         this.add(this.edges, edgeKey(nodeKey(path[j]!.cell, path[j]!.layer), nodeKey(n.cell, n.layer)), { a: path[j]!.t, b: path[j]!.t, owner: id });
@@ -75,11 +116,22 @@ export class Ledger {
   edgeFree(id: string, a: string, b: string, t: number) {
     return !(this.edges.get(edgeKey(a, b)) ?? []).some((iv) => iv.owner !== id && t >= iv.a && t <= iv.b);
   }
+  nodeFree(id: string, node: string, t: number) {
+    return !(this.nodes.get(node) ?? []).some((iv) => iv.owner !== id && t >= iv.a && t <= iv.b);
+  }
   get size() { let n = 0; for (const a of this.nodes.values()) n += a.length; return n; }
 }
 
 /** Safe Interval Path Planning over the lazy 4D hex graph. */
-export function sipp(ledger: Ledger | null, id: string, start: State, goal: string, noFly: Set<string>): State[] | null {
+export function sipp(
+  ledger: Ledger | null,
+  id: string,
+  start: State,
+  goal: string,
+  noFly: Set<string>,
+  cfg: Partial<EngineConfig> = {},
+): State[] | null {
+  const { maxT, maxExpansions, maxWait } = { ...DEFAULT_CONFIG, ...cfg };
   const safe = (c: string, l: number): [number, number][] => (ledger ? ledger.safeIntervals(id, nodeKey(c, l)) : [[0, INF]]);
   const edgeOk = (a: { cell: string; layer: number }, b: { cell: string; layer: number }, t: number) =>
     !ledger || ledger.edgeFree(id, nodeKey(a.cell, a.layer), nodeKey(b.cell, b.layer), t);
@@ -91,7 +143,7 @@ export function sipp(ledger: Ledger | null, id: string, start: State, goal: stri
   const open: Node[] = [{ cell: start.cell, layer: start.layer, iv: s0, g: start.t, f: start.t + h(start.cell), parent: null, depart: 0 }];
   best.set(`${start.cell}|${start.layer}|${s0}`, start.t);
   let expansions = 0;
-  while (open.length && expansions < 20000) {
+  while (open.length && expansions < maxExpansions) {
     open.sort((x, y) => x.f - y.f || y.g - x.g);
     const n = open.shift()!; expansions++;
     if (n.cell === goal) {
@@ -104,7 +156,7 @@ export function sipp(ledger: Ledger | null, id: string, start: State, goal: stri
       }
       return out;
     }
-    if (n.g > start.t + MAX_T) continue;
+    if (n.g > start.t + maxT) continue;
     const ivEnd = safe(n.cell, n.layer)[n.iv]![1];
     const nbrs: { cell: string; layer: number; cost: number }[] = [];
     for (const c of gridDisk(n.cell, 1)) if (c !== n.cell && !noFly.has(c)) nbrs.push({ cell: c, layer: n.layer, cost: 0 });
@@ -112,7 +164,7 @@ export function sipp(ledger: Ledger | null, id: string, start: State, goal: stri
     if (n.layer < LAYERS.length - 1) nbrs.push({ cell: n.cell, layer: n.layer + 1, cost: 0.4 });
     for (const m of nbrs) {
       safe(m.cell, m.layer).forEach(([a, b], j) => {
-        const lo = Math.max(n.g, a - 1), hi = Math.min(ivEnd, b - 1, n.g + 30);
+        const lo = Math.max(n.g, a - 1), hi = Math.min(ivEnd, b - 1, n.g + maxWait);
         for (let d = lo; d <= hi; d++) {
           if (!edgeOk(n, m, d)) continue;
           const arr = d + 1, k = `${m.cell}|${m.layer}|${j}`;
@@ -128,11 +180,65 @@ export function sipp(ledger: Ledger | null, id: string, start: State, goal: stri
   return null;
 }
 
+/**
+ * Contingency search (closure fallback). Time-expanded breadth-first search, one move per slot
+ * (hold, change layer by one, or move to a ring-1 H3 neighbour), through voxels and edges that are
+ * free in the ledger. Returns the earliest-reached path to a target state, or null within `horizon` slots.
+ *   "exit": target = any state in a cell outside the closure; closed cells may be traversed
+ *           (the drone is already inside and must get out).
+ *   "land": target = lowest layer of a cell outside the closure; closed cells may not be entered.
+ *           Reaching layer 0 models a contingency landing; the drone leaves the airspace there.
+ */
+export function contingencySearch(
+  ledger: Ledger,
+  id: string,
+  start: State,
+  noFly: Set<string>,
+  mode: "exit" | "land" | "exit+land",
+  horizon = 60,
+): State[] | null {
+  type N = { s: State; parent: N | null };
+  // exit: reach any open cell. land: reach layer 0 of an open cell through open cells only.
+  // exit+land: reach layer 0 of an open cell, passing through closed cells if needed (one combined search).
+  const isTarget = (x: State) => !noFly.has(x.cell) && (mode === "exit" || x.layer === 0);
+  const unwind = (n: N) => {
+    const out: State[] = [];
+    for (let c: N | null = n; c; c = c.parent) out.unshift(c.s);
+    return out;
+  };
+  let level: N[] = [{ s: { cell: start.cell, layer: start.layer, t: start.t }, parent: null }];
+  if (isTarget(level[0]!.s)) return [level[0]!.s];
+  for (let t = start.t; t < start.t + horizon; t++) {
+    const next = new Map<string, N>();
+    for (const n of level) {
+      const a = n.s,
+        from = nodeKey(a.cell, a.layer);
+      const succ: { cell: string; layer: number }[] = [{ cell: a.cell, layer: a.layer }];
+      if (a.layer > 0) succ.push({ cell: a.cell, layer: a.layer - 1 });
+      if (a.layer < LAYERS.length - 1) succ.push({ cell: a.cell, layer: a.layer + 1 });
+      for (const c of gridDisk(a.cell, 1))
+        if (c !== a.cell && (mode !== "land" || !noFly.has(c)))
+          succ.push({ cell: c, layer: a.layer });
+      for (const b of succ) {
+        const k = nodeKey(b.cell, b.layer);
+        if (next.has(k) || !ledger.nodeFree(id, k, t + 1)) continue;
+        if (k !== from && !ledger.edgeFree(id, from, k, t)) continue;
+        const m: N = { s: { cell: b.cell, layer: b.layer, t: t + 1 }, parent: n };
+        if (isTarget(m.s)) return unwind(m);
+        next.set(k, m);
+      }
+    }
+    if (!next.size) return null;
+    level = [...next.values()];
+  }
+  return null;
+}
+
 /** Reactive controller: execute intents slot-by-slot, hovering when blocked. */
-function simulateReactive(drones: Drone[], from: number, log: LogEntry[]) {
+function simulateReactive(drones: Drone[], from: number, log: LogEntry[], maxT = MAX_T) {
   for (const d of drones) d.path = d.path.filter((s) => s.t <= from);
   const waits: Record<string, number> = {};
-  for (let t = from; t < from + MAX_T * 2; t++) {
+  for (let t = from; t < from + maxT * 2; t++) {
     const occ = new Map<string, string>();
     const live = drones.filter((d) => { const l = d.path[d.path.length - 1]; return l && l.t === t && l.cell !== d.to; });
     for (const d of live) { const l = d.path[d.path.length - 1]!; occ.set(nodeKey(l.cell, l.layer), d.id); }
@@ -158,18 +264,170 @@ function simulateReactive(drones: Drone[], from: number, log: LogEntry[]) {
   }
 }
 
-export type Metrics = { conflicts: number; delay: number; replans: number; arrived: number; ledger: number; planMs: number };
+export type Metrics = {
+  conflicts: number;
+  delay: number;
+  replans: number;
+  arrived: number;
+  ledger: number;
+  planMs: number;
+  diverted: number;
+  cancelled: number;
+  evacuated: number;
+};
+/** "local": repair only drones affected by the closure. "global": release and replan every active drone. */
+export type RepairMode = "local" | "global";
 
 export class Airspace {
-  ledger = new Ledger();
+  ledger: Ledger;
+  cfg: EngineConfig;
   noFly = new Set<string>();
   log: LogEntry[] = [];
   planMs = 0;
-  constructor(public controller: Controller) {}
+  /** HyperHex only. true: closure handling with evacuation and safe fallback (default). false: legacy behaviour. */
+  fallback = true;
+  constructor(
+    public controller: Controller,
+    cfg: Partial<EngineConfig> = {},
+  ) {
+    this.cfg = { ...DEFAULT_CONFIG, ...cfg };
+    this.ledger = new Ledger(this.cfg.bufferSlots);
+  }
+
+  private timed<T>(f: () => T): T {
+    const t0 = performance.now();
+    const r = f();
+    this.planMs += performance.now() - t0;
+    return r;
+  }
+
+  /**
+   * Coordinated closure handling with safe fallback (HyperHex).
+   * For each affected drone, in generated order:
+   *  0. Release its reservations from the replanning slot on.
+   *  1. Not yet departed: replan origin -> destination; if impossible (or origin/destination closed), cancel (stay on ground).
+   *  2. Airborne inside a closed cell: evacuate by the earliest reservable path to any open cell.
+   *  3. Replan to the destination (SIPP against the ledger, closed cells excluded).
+   *  4. If that fails (or the destination is closed): contingency landing at the earliest reachable
+   *     open cell on the lowest layer. Every fallback path is reserved in the ledger.
+   * "global" mode releases all active drones first, then replans them all the same way.
+   */
+  private repairCoordinated(drones: Drone[], now: number, mode: RepairMode) {
+    const active = drones.filter(
+      (d) => d.path.length && !d.outcome && d.path[d.path.length - 1]!.t > now,
+    );
+    const affected =
+      mode === "global"
+        ? active
+        : active.filter((d) => {
+            const cur = stateAt(d, now);
+            return (
+              (cur && this.noFly.has(cur.cell)) ||
+              d.path.some((s) => s.t >= now && this.noFly.has(s.cell))
+            );
+          });
+    const startOf = (d: Drone): { s0: State; departed: boolean } => {
+      const departed = d.path[0]!.t < now;
+      const s = departed ? stateAt(d, now)! : d.path[0]!;
+      return { s0: { cell: s.cell, layer: s.layer, t: departed ? now : s.t }, departed };
+    };
+    if (mode === "global") for (const d of affected) this.ledger.release(d.id, startOf(d).s0.t);
+    for (const d of affected) {
+      const { s0, departed } = startOf(d);
+      if (mode === "local") this.ledger.release(d.id, s0.t);
+      d.replans++;
+      const keep = d.path.filter((s) => s.t < s0.t);
+      const goalOpen = !this.noFly.has(d.to);
+      if (!departed) {
+        const p =
+          goalOpen && !this.noFly.has(s0.cell)
+            ? this.timed(() => sipp(this.ledger, d.id, s0, d.to, this.noFly, this.cfg))
+            : null;
+        if (p) {
+          d.path = p;
+          this.ledger.reservePath(d.id, p);
+          this.log.push({ t: now, kind: "replan", msg: `${d.id} replanned before departure` });
+        } else {
+          d.path = [];
+          d.outcome = "cancelled";
+          this.log.push({
+            t: now,
+            kind: "fail",
+            msg: `${d.id} cancelled before departure — stays on ground`,
+          });
+        }
+        continue;
+      }
+      let prefix: State[] = [],
+        s = s0;
+      if (this.noFly.has(s0.cell)) {
+        const ex = this.timed(() =>
+          contingencySearch(this.ledger, d.id, s0, this.noFly, "exit", this.cfg.contingencyHorizon),
+        );
+        if (ex) {
+          prefix = ex.slice(0, -1);
+          s = ex[ex.length - 1]!;
+          d.evacuated = true;
+          this.log.push({
+            t: now,
+            kind: "replan",
+            msg: `${d.id} evacuating closure (${ex.length - 1} slots)`,
+          });
+        }
+      }
+      let p =
+        goalOpen && !this.noFly.has(s.cell)
+          ? this.timed(() => sipp(this.ledger, d.id, s, d.to, this.noFly, this.cfg))
+          : null;
+      if (p) this.log.push({ t: now, kind: "replan", msg: `${d.id} rerouted around TFR` });
+      else {
+        p = this.timed(() =>
+          contingencySearch(this.ledger, d.id, s, this.noFly, "land", this.cfg.contingencyHorizon),
+        );
+        if (!p && prefix.length) {
+          // The two-stage evacuate-then-land plan can box a drone in at the exit cell; retry as one
+          // combined search from the original position inside the closure.
+          const el = this.timed(() =>
+            contingencySearch(
+              this.ledger,
+              d.id,
+              s0,
+              this.noFly,
+              "exit+land",
+              this.cfg.contingencyHorizon,
+            ),
+          );
+          if (el) {
+            prefix = [];
+            p = el;
+            this.log.push({ t: now, kind: "replan", msg: `${d.id} combined exit-and-land search` });
+          }
+        }
+        if (p) {
+          d.outcome = "diverted";
+          this.log.push({
+            t: now,
+            kind: "fail",
+            msg: `${d.id} no route to destination — contingency landing at nearest open cell`,
+          });
+        } else {
+          p = [s];
+          this.log.push({
+            t: now,
+            kind: "fail",
+            msg: `${d.id} UNRESOLVED — no reservable exit or landing within horizon`,
+          });
+        }
+      }
+      const fresh = [...prefix, ...p];
+      d.path = [...keep, ...fresh];
+      this.ledger.reservePath(d.id, fresh);
+    }
+  }
 
   private plan(d: Drone, s0: State, coordinated: boolean) {
     const t0 = performance.now();
-    const p = sipp(coordinated ? this.ledger : null, d.id, s0, d.to, this.noFly);
+    const p = sipp(coordinated ? this.ledger : null, d.id, s0, d.to, this.noFly, this.cfg);
     this.planMs += performance.now() - t0;
     return p;
   }
@@ -190,14 +448,25 @@ export class Airspace {
         else d.intent = p.map((s, i) => ({ ...s, i }));
       }
     }
-    if (this.controller === "reactive") { for (const d of drones) d.path = []; simulateReactive(drones, 0, this.log); }
+    if (this.controller === "reactive") { for (const d of drones) d.path = []; simulateReactive(drones, 0, this.log, this.cfg.maxT); }
     this.logConflicts(drones, 0);
   }
 
-  injectNoFly(center: string, radius: number, drones: Drone[], now: number) {
+  injectNoFly(
+    center: string,
+    radius: number,
+    drones: Drone[],
+    now: number,
+    mode: RepairMode = "local",
+  ) {
     const cells = gridDisk(center, radius);
     cells.forEach((c) => this.noFly.add(c));
     this.log.push({ t: now, kind: "nofly", msg: `TFR activated: ${cells.length} cells closed` });
+    if (this.controller === "hyperhex" && (this.fallback || mode === "global")) {
+      this.repairCoordinated(drones, now, mode);
+      this.logConflicts(drones, now);
+      return;
+    }
     for (const d of drones) {
       const route = this.controller === "reactive" ? d.intent : d.path;
       const cur = stateAt(d, now) ?? (route[0] ? { ...route[0], t: d.start } : null);
@@ -219,7 +488,7 @@ export class Airspace {
       }
       this.log.push({ t: now, kind: "replan", msg: `${d.id} rerouted around TFR` });
     }
-    if (this.controller === "reactive") simulateReactive(drones, now, this.log);
+    if (this.controller === "reactive") simulateReactive(drones, now, this.log, this.cfg.maxT);
     this.logConflicts(drones, now);
   }
 
@@ -238,7 +507,17 @@ export class Airspace {
       if (!last || last.cell !== d.to) continue;
       arrived++; delay += last.t - d.start - gridDistance(d.from, d.to);
     }
-    return { conflicts: findConflicts(drones).length, delay, replans: drones.reduce((s, d) => s + d.replans, 0), arrived, ledger: this.ledger.size, planMs: this.planMs };
+    return {
+      conflicts: findConflicts(drones).length,
+      delay,
+      replans: drones.reduce((s, d) => s + d.replans, 0),
+      arrived,
+      ledger: this.ledger.size,
+      planMs: this.planMs,
+      diverted: drones.filter((d) => d.outcome === "diverted").length,
+      cancelled: drones.filter((d) => d.outcome === "cancelled").length,
+      evacuated: drones.filter((d) => d.evacuated).length,
+    };
   }
 }
 

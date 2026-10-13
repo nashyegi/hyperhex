@@ -37,7 +37,7 @@ model when altitude and time are included.
 | Layer bases | 60 m, 100 m, 140 m |
 | Rendered layer thickness | 30 m |
 | Rendered bands | 60 to 90 m, 100 to 130 m, 140 to 170 m |
-| Time represented by a slot | 4 seconds |
+| Time represented by a slot | 4 seconds (workbench default; configurable via `EngineConfig.slotSec`, see docs/experiments-e7.md) |
 | Workbench playback range | Slots 0 to 60 |
 | Transit-fleet selections | 12, 24, 36, 48, 72 |
 | Additional demonstration drones | 3 |
@@ -149,11 +149,14 @@ fewer conflicts or less delay.
 - Conflict checking is not a full physical-separation test. The swap detector
   requires different horizontal cells and does not count same-cell vertical swaps.
 - Destination occupancy is not reserved indefinitely after arrival.
-- On failed coordinated repair, future reservations have already been released,
-  while the old path is retained and a "holding" event is logged. This is not a
-  validated holding maneuver or safe fallback.
-- Drones already inside a newly closed cell are skipped by the repair condition.
-  There is no modeled emergency evacuation procedure.
+- Closure handling (HyperHex, `Airspace.fallback = true`, the default) now evacuates
+  drones already inside a newly closed cell by the earliest reservable path to an open
+  cell, and, when no route to the destination exists, performs a contingency landing at
+  the earliest reachable open cell on the lowest layer; undeparted drones are cancelled
+  instead. Every fallback path is reserved in the ledger. Landing is modeled as leaving
+  the airspace on reaching layer 0; vertiport/landing-site availability is not modeled.
+  The legacy behaviour (release reservations, keep old path) remains available with
+  `fallback = false` for comparison. See [E4](experiments-e4.md).
 - The reactive simulator's departure handling should be tested explicitly,
   particularly for slot-zero departures, before drawing comparative conclusions.
 - The scenario and stack demonstration are synthetic and intentionally constructed.
