@@ -223,7 +223,12 @@ export function Workbench() {
 
   const s = sim.current;
   const m = s.air.metrics(s.drones);
-  const airborne = s.drones.filter((d) => { const st = stateAt(d, slot); return st && st.cell !== d.to; }).length;
+  const landedEarly = (d: (typeof s.drones)[number]) =>
+    d.outcome === "diverted" && slot >= d.path[d.path.length - 1]!.t;
+  const airborne = s.drones.filter((d) => {
+    const st = stateAt(d, slot);
+    return st && st.cell !== d.to && !landedEarly(d);
+  }).length;
   const ctl = CONTROLLERS.find((c) => c.id === controller)!;
   const stacks = findStacks(s.drones);
   const showcase = (() => {
@@ -338,7 +343,15 @@ export function Workbench() {
           <ul className="grid grid-cols-2 gap-x-3 gap-y-1 font-mono text-[11px]">
             {s.drones.map((d) => {
               const st = stateAt(d, slot);
-              const status = !st ? "ground" : st.cell === d.to ? "landed" : `L${st.layer}`;
+              const status = !st
+                ? d.outcome === "cancelled"
+                  ? "cancelled"
+                  : "ground"
+                : st.cell === d.to
+                  ? "landed"
+                  : landedEarly(d)
+                    ? "diverted"
+                    : `L${st.layer}`;
               return (
                 <li key={d.id} className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full" style={{ background: d.color }} />
