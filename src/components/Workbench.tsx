@@ -503,7 +503,8 @@ export function Workbench() {
               </a>
               <a
                 href="https://doi.org/10.5281/zenodo.23351838"
-                download
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"
               >
                 <FileText className="h-3 w-3 shrink-0" />
@@ -790,8 +791,9 @@ export function Workbench() {
               </a>
               <a
                 href="https://doi.org/10.5281/zenodo.23351838"
-                download
-                aria-label="Download the HyperHex technical white paper"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open the HyperHex technical white paper on Zenodo (new tab)"
                 className="grid h-6 w-6 place-items-center text-mobile-overlay-ink transition-opacity hover:opacity-60"
               >
                 <FileDown className="h-4 w-4" />
