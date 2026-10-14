@@ -51,7 +51,7 @@ export const Route = createFileRoute("/")({
               "@id": "https://hyperhex.dev/#org",
               name: "HyperHex",
               url: "https://hyperhex.dev/",
-              logo: "https://hyperhex.dev/apple-touch-icon.png",
+              logo: "https://hyperhex.dev/favicon.png",
               founder: { "@id": PERSON["@id"] },
               sameAs: ["https://github.com/nashyegi/hyperhex"],
             },
