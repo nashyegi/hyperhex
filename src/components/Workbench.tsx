@@ -502,7 +502,7 @@ export function Workbench() {
                 naresh@hyperhex.dev
               </a>
               <a
-                href="https://doi.org/10.5281/zenodo.23351838"
+                href="https://doi.org/10.5281/zenodo.23375724"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex min-w-0 items-center gap-1 font-mono text-[10px] leading-none text-muted-foreground transition-colors hover:text-primary"
@@ -790,7 +790,7 @@ export function Workbench() {
                 <Mail className="h-4 w-4" />
               </a>
               <a
-                href="https://doi.org/10.5281/zenodo.23351838"
+                href="https://doi.org/10.5281/zenodo.23375724"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open the HyperHex technical white paper on Zenodo (new tab)"
