@@ -28,11 +28,12 @@ import {
   FLEET_OPTIONS,
   LAYERS,
   LAYER_H,
-  SLOT_SEC,
   ORIGIN,
+  CONFIG_PRESETS,
   type Controller,
   type Drone,
   type Airspace,
+  type ConfigPreset,
 } from "@/lib/hyperhex";
 
 const CESIUM = "https://cesium.com/downloads/cesiumjs/releases/1.121/Build/Cesium";
@@ -54,11 +55,12 @@ function loadCesium(): Promise<any> {
   });
 }
 
-type Sim = { air: Airspace; drones: Drone[]; center: string };
+type Sim = { air: Airspace; drones: Drone[]; center: string; preset: ConfigPreset };
 
 export function Workbench() {
   const el = useRef<HTMLDivElement>(null);
   const [controller, setController] = useState<Controller>("hyperhex");
+  const [configPreset, setConfigPreset] = useState<ConfigPreset>(CONFIG_PRESETS[0]!);
   const sim = useRef<Sim | null>(null);
   const viewer = useRef<any>(null);
   const observerRef = useRef<ResizeObserver | null>(null);
@@ -76,13 +78,13 @@ export function Workbench() {
   const X = (m: number) => m * ex.current;
   const [fleet, setFleet] = useState(12);
   const fleetRef = useRef(12);
-  const bench = useMemo(() => benchmark(8, fleet), [fleet]);
+  const bench = useMemo(() => benchmark(8, fleet, configPreset), [fleet, configPreset]);
   const [inspect, setInspect] = useState<string | null>(null);
   const [inspectorClosed, setInspectorClosed] = useState(false);
   const [mobilePanel, setMobilePanel] = useState(false);
   const [mobileView, setMobileView] = useState(false);
 
-  if (!sim.current) sim.current = buildScenario(controller, fleetRef.current);
+  if (!sim.current) sim.current = buildScenario(controller, fleetRef.current, configPreset);
 
   useEffect(() => {
     let dead = false;
@@ -536,10 +538,28 @@ export function Workbench() {
           </p>
           <h1 className="mt-0.5 font-display text-xl font-semibold leading-tight">Low-Altitude Drone Corridors</h1>
           <p className="mt-1 text-xs leading-snug text-muted-foreground">
-            H3 res-9 hex tiles × {LAYERS.length} altitude layers × {SLOT_SEC}s slots, deconflicted by safe-interval
-            corridor planning.
+            H3 res-{configPreset.res} hex tiles × {LAYERS.length} altitude layers × {configPreset.engine.slotSec}s slots
+            {configPreset.engine.bufferSlots > 0 && ` + ${configPreset.engine.bufferSlots}-slot buffer`}, deconflicted by
+            safe-interval corridor planning.
           </p>
         </header>
+
+        <div className="border-b border-border p-4">
+          <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Configuration</p>
+          <div className="grid grid-cols-2 gap-1 rounded-md bg-secondary p-1">
+            {CONFIG_PRESETS.map((p) => (
+              <Button
+                key={p.id}
+                variant={configPreset.id === p.id ? "default" : "ghost"}
+                size="sm"
+                onClick={() => pickPreset(p)}
+                className="h-auto min-w-0 whitespace-normal px-2 py-2 text-center text-[11px] leading-tight"
+              >
+                {p.label}
+              </Button>
+            ))}
+          </div>
+        </div>
 
         <div className="border-b border-border p-4">
           <p className="mb-2 font-mono text-[10px] uppercase text-muted-foreground">Controller</p>

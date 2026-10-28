@@ -13,6 +13,32 @@ export const MAX_T = 90;
 export const ORIGIN = { lat: 37.7793, lng: -122.4193 };
 
 /**
+ * Configuration presets for scenario generation and planning.
+ * DEFAULT: workbench default (H3 res 9, 4-second slots, no buffer).
+ * PAPER: preprint setting (H3 res 10, 8-second slots, one-slot buffer, ~114.7 m separation).
+ */
+export type ConfigPreset = {
+  id: "default" | "paper";
+  label: string;
+  res: number;
+  engine: Partial<EngineConfig> & { slotSec: number; bufferSlots: number };
+};
+export const CONFIG_PRESETS: ConfigPreset[] = [
+  {
+    id: "default",
+    label: "Default (res 9, 4s slots, no buffer)",
+    res: 9,
+    engine: { slotSec: 4, bufferSlots: 0 },
+  },
+  {
+    id: "paper",
+    label: "Paper setting (res 10, 8s slots, 1-slot buffer)",
+    res: 10,
+    engine: { slotSec: 8, bufferSlots: 1, maxT: 90, maxWait: 15, maxExpansions: 60000 },
+  },
+];
+
+/**
  * Engine parameters. The H3 resolution is carried by the cells themselves (the engine only uses
  * ring-1 neighbours), so it is chosen by the scenario; `RES` above is the workbench default.
  *   slotSec        seconds per slot; one move (neighbour cell or adjacent layer) takes one slot,
@@ -595,10 +621,10 @@ export function findStacks(drones: Drone[]): Stack[] {
 }
 
 /** Headless run of the same scenario with a TFR at `tfrAt`, for controller comparison. */
-export function benchmark(tfrAt = 8, fleet = 12): Record<Controller, Metrics> {
+export function benchmark(tfrAt = 8, fleet = 12, preset: ConfigPreset = CONFIG_PRESETS[0]!): Record<Controller, Metrics> {
   const out = {} as Record<Controller, Metrics>;
   for (const c of CONTROLLERS) {
-    const s = buildScenario(c.id, fleet);
+    const s = buildScenario(c.id, fleet, preset);
     s.air.injectNoFly(s.center, 1, s.drones, tfrAt);
     out[c.id] = s.air.metrics(s.drones);
   }
