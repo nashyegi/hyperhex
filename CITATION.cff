@@ -1,13 +1,28 @@
 cff-version: 1.2.0
 message: >-
-  If you use HyperHex in research or teaching, please cite this software and
-  identify the exact commit or release used. Citation is requested, not an
+  If you use HyperHex in research or teaching, please cite the preprint below
+  and identify the exact software release used. Citation is requested, not an
   additional software-license condition.
 type: software
 title: "HyperHex: Urban Low-Altitude Drone Corridor Research Simulator"
+version: 0.2.0
+date-released: 2026-10-13
 authors:
   - family-names: Yegireddi
     given-names: Naresh
+    orcid: "https://orcid.org/0009-0004-7675-720X"
+    affiliation: HyperHex
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23345932
+    description: Software, all versions (Zenodo concept DOI)
+  - type: doi
+    value: 10.5281/zenodo.23345933
+    description: Software release v0.2.0
+  - type: doi
+    value: 10.5281/zenodo.23551618
+    description: Preprint, all versions
+doi: 10.5281/zenodo.23345932
 repository-code: "https://github.com/nashyegi/hyperhex"
 url: "https://hyperhex.dev"
 abstract: >-
@@ -24,3 +39,18 @@ keywords:
   - four-dimensional reservations
   - research simulation
 license: AGPL-3.0-only
+preferred-citation:
+  type: article
+  title: "HyperHex: Sparse 4D Reservations over H3 Hexagonal Corridors for Strategic Deconfliction of Urban Drone Traffic"
+  authors:
+    - family-names: Yegireddi
+      given-names: Naresh
+      orcid: "https://orcid.org/0009-0004-7675-720X"
+      affiliation: "HyperHex, Little Elm, TX"
+  year: 2026
+  month: 10
+  publisher:
+    name: Zenodo
+  doi: 10.5281/zenodo.23551618
+  url: "https://doi.org/10.5281/zenodo.23551618"
+  notes: Preprint, not peer reviewed.
