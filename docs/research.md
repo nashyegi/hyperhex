@@ -117,7 +117,9 @@ The associated preprint is archived on Zenodo at
 [doi:10.5281/zenodo.23551618](https://doi.org/10.5281/zenodo.23551618). It is a
 preprint and has not been peer reviewed. Software release v0.2.0 is archived at
 [doi:10.5281/zenodo.23345933](https://doi.org/10.5281/zenodo.23345933). Do not
-describe the manuscript as peer-reviewed.
+describe the manuscript as peer-reviewed. This documentation does not supply a
+patent identifier. Do not describe an application as a granted patent without the
+corresponding evidence.
 
 For a citable research release, archive the exact reviewed version, attach the
 reproduction materials, and update citation metadata with its actual version,
