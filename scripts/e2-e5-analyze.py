@@ -62,7 +62,7 @@ for c in ctrls:
     a.errorbar(fleets,[y[0] for y in ys],yerr=[y[1] for y in ys],fmt=sty[c],capsize=3,label=NAME[c]); a.set_ylabel(lab)
 for a in ax: a.set_xlabel("Drones (random O/D)"); a.grid(alpha=.3)
 ax[0].legend(fontsize=8)
-fig.suptitle(f"E2 seeded density sweep: {len(meta['seeds'])} seeds/point, mean ± 95% CI, radius-1 closure at slot 8, commit {meta['commit'][:7]}",fontsize=9)
+fig.suptitle(f"Seeded density sweep: {len(meta['seeds'])} seeds/point, mean ± 95% CI, radius-1 closure at slot 8, commit {meta['commit'][:7]}",fontsize=9)
 fig.tight_layout(); fig.savefig(os.path.join(outdir,f"fig_{prefix}_density.png"),dpi=200)
 if tim:
   fig,ax=plt.subplots(1,2,figsize=(9,3.4)); hh=[x for x in summary if x["controller"]=="hyperhex"]
@@ -72,6 +72,6 @@ if tim:
   ax[1].errorbar(fleets,[x["ledger_edges"][0] for x in hh],yerr=[x["ledger_edges"][1] for x in hh],fmt="s--",capsize=3,label="edge intervals")
   ax[1].set_ylabel("Ledger entries"); ax[1].legend(fontsize=8)
   for a in ax: a.set_xlabel("Drones"); a.grid(alpha=.3)
-  fig.suptitle(f"E5 HyperHex admission cost and ledger size ({meta['runtime']}, {meta['platform']}; median of {meta['timingReps']} reps per seed, mean ± 95% CI over seeds)",fontsize=8.5)
+  fig.suptitle(f"HyperHex admission cost and ledger size ({meta['runtime']}, {meta['platform']}; median of {meta['timingReps']} reps per seed, mean ± 95% CI over seeds)",fontsize=8.5)
   fig.tight_layout(); fig.savefig(os.path.join(outdir,f"fig_e5_scaling.png"),dpi=200)
 print("\n".join(md))

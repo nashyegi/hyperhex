@@ -28,12 +28,12 @@ describe("App routing", () => {
   it("renders the index route", async () => {
     await renderAt("/");
 
-    // The index route renders the Workbench, which needs CesiumJS.
-    // In the test environment without CesiumJS, we just check that the router
-    // attempted to mount the route (no NotFoundComponent).
+    // The index route renders the Workbench, which contains the heading
+    // "Low-Altitude Drone Corridors" in the header. In the test environment
+    // without CesiumJS, we check that the route attempted to mount the Workbench
+    // by finding this stable text that doesn't depend on Cesium loading.
     await waitFor(() => {
-      expect(screen.queryByText("404")).not.toBeInTheDocument();
-      expect(screen.queryByText("Page not found")).not.toBeInTheDocument();
+      expect(screen.getByText("Low-Altitude Drone Corridors")).toBeInTheDocument();
     });
   });
 
