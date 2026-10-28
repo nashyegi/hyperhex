@@ -32,7 +32,7 @@ def guarantee(sid):
 g = defaultdict(list)
 for r in rows: g[(r["setting"], r["controller"], r["fleet"])].append(r)
 ORDER = ["r10-8s-b1", "r10-8s-b0", "r11-4s-b1", "r9-4s-b1", "r9-4s-b0"]
-LABEL = {"r9-4s-b0": "Res 9, 4 s, no buffer (v0.4 setting)", "r9-4s-b1": "Res 9, 4 s, buffer 1",
+LABEL = {"r9-4s-b0": "Res 9, 4 s, no buffer (baseline)", "r9-4s-b1": "Res 9, 4 s, buffer 1",
          "r10-8s-b0": "Res 10, 8 s, no buffer", "r10-8s-b1": "Res 10, 8 s, buffer 1 (primary)", "r11-4s-b1": "Res 11, 4 s, buffer 1"}
 summ = {}
 for (sid, c, f), rs in g.items():
@@ -95,5 +95,5 @@ ax[0].set_title("HyperHex arrived (%)", fontsize=9); ax[1].set_title("Delay per 
 ax[2].set_title("HyperHex min horizontal sep. when\nvertical < 30 m (m); dotted = guarantee", fontsize=9); ax[3].set_title("HyperHex planning (ms / drone)", fontsize=9)
 for a in ax: a.set_xlabel("Fleet size"); a.grid(alpha=0.3)
 ax[0].legend(fontsize=7.5); ax[1].legend(fontsize=7)
-fig.suptitle("E7: resolution / slot length / reservation buffer (20 seeds per point, closure mid-scenario; means)", fontsize=10)
+fig.suptitle("Resolution / slot length / reservation buffer (20 seeds per point, closure mid-scenario; means)", fontsize=10)
 fig.tight_layout(); fig.savefig(os.path.join(outdir, "fig_e7_realism.png"), dpi=200)

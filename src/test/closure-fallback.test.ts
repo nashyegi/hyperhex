@@ -4,7 +4,7 @@ import { buildScenario } from "@/lib/hyperhex";
 
 describe("HyperHex closure handling with safe fallback", () => {
   it("keeps the built-in 12-drone benchmark unchanged", () => {
-    const s = buildScenario("hyperhex", 12);
+    const s = buildScenario("hyperhex", 12, { id: "default", label: "Default", res: 9, engine: { slotSec: 4, bufferSlots: 0 } });
     s.air.injectNoFly(s.center, 1, s.drones, 8);
     const m = s.air.metrics(s.drones);
     expect({

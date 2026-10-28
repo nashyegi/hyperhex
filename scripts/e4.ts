@@ -33,7 +33,13 @@ lines.push(
   JSON.stringify({
     kind: "meta",
     commit,
-    note: "engine = commit + e2_e5.patch + e4_fallback.patch (uncommitted)",
+    dirty: (() => {
+      try {
+        return execSync("git status --porcelain").toString().trim().length > 0;
+      } catch {
+        return null;
+      }
+    })(),
     runtime: `bun ${typeof Bun !== "undefined" ? Bun.version : "?"}`,
     seeds: Array.from({ length: SEEDS }, (_, s) => 2000 + s),
     radii: RADII,
