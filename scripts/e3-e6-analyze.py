@@ -56,7 +56,7 @@ for k, (key, ttl) in enumerate([("arrivedPct", "Arrived (%)"), ("groundHolds", "
 axs[0].legend(fontsize=7)
 meta = next((r for r in rows if r["kind"] == "meta"), {})
 setting = meta.get("setting", {}).get("id", "res 9, 4-s slots, closure r=1 at slot 8")
-fig.suptitle(f"E3: admission-order sensitivity (HyperHex, local repair + fallback; {setting}; 20 seeds, mean ± 95% CI)", fontsize=9.5)
+fig.suptitle(f"Admission-order sensitivity (HyperHex, local repair + fallback; {setting}; 20 seeds, mean ± 95% CI)", fontsize=9.5)
 fig.tight_layout(); fig.savefig(os.path.join(outdir, "fig_e3_order.png"), dpi=200)
 # ---------- E6 ----------
 e6 = [r for r in rows if r["kind"] == "e6"]
@@ -97,7 +97,7 @@ for t, col in zip(TH, ["#16a34a", "#2563eb", "#f59e0b", "#dc2626"]):
     axs[1].plot(f6, [summ["e6"][f"hyperhex/{f}"]["losPerRun"][t] for f in f6], "o-", color=col, label=f"HyperHex, {t}")
 axs[1].set_xlabel("Fleet size"); axs[1].set_ylabel("Continuous-time LoS pairs per run"); axs[1].legend(fontsize=7); axs[1].grid(alpha=0.3)
 axs[1].set_title("HyperHex: none below 100 m; all pairs below 150/200 m fall between slots\n(not visible to the discrete check)", fontsize=9)
-fig.suptitle("E6: continuous-time separation (linear interpolation, 8 samples/slot, layer midpoints 75/115/155 m)", fontsize=9.5)
+fig.suptitle("Continuous-time separation (linear interpolation, 8 samples/slot, layer midpoints 75/115/155 m)", fontsize=9.5)
 fig.tight_layout(); fig.savefig(os.path.join(outdir, "fig_e6_separation.png"), dpi=200)
 json.dump(summ, open(os.path.join(outdir, "e3_e6_summary.json"), "w"), indent=1)
 print("\n".join(md + sp)); print(); print("\n".join(md6))

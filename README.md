@@ -137,15 +137,25 @@ requirements for reporting experiments are documented in the
 
 ## Citation and collaboration
 
-If you use HyperHex in research or teaching, please cite the software and identify
-the exact commit or release used. Machine-readable author and repository metadata
-is available in [CITATION.cff](CITATION.cff). Citation is an academic request, not an
-additional restriction on the software license.
+If you use HyperHex in research or teaching, please cite the preprint and name the
+software release you used. [CITATION.cff](CITATION.cff) has both in machine-readable
+form, and GitHub's "Cite this repository" button reads it. Citation is an academic
+request, not an additional restriction on the software license.
 
-No paper DOI, patent identifier, or archived software-release DOI is supplied by
-this repository's documentation. Do not infer publication, peer-review, or patent
-status from the demonstration. See the [research guide](docs/research.md) for how to
-report and share work based on HyperHex.
+- Preprint: N. Yegireddi, "HyperHex: Sparse 4D Reservations over H3 Hexagonal
+  Corridors for Strategic Deconfliction of Urban Drone Traffic," Zenodo, 2026.
+  [doi:10.5281/zenodo.23551618](https://doi.org/10.5281/zenodo.23551618)
+  (preprint, not peer reviewed)
+- Software: N. Yegireddi, "HyperHex: Urban Low-Altitude Drone Corridor Research
+  Simulator," v0.2.0, Zenodo, 2026.
+  [doi:10.5281/zenodo.23345933](https://doi.org/10.5281/zenodo.23345933)
+
+Machine-readable metadata is also available via GitHub's "Cite this repository"
+button, which reads [CITATION.cff](CITATION.cff).
+
+This repository's documentation supplies no patent identifier. Do not infer
+peer-review or patent status from the demonstration. See the
+[research guide](docs/research.md) for how to report and share work based on HyperHex.
 
 Forks, replication studies, bug reports, teaching applications, and research
 partnership inquiries are welcome. Upstream pull requests are not currently
