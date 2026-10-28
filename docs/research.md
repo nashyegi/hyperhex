@@ -113,11 +113,11 @@ Suggested citation structure:
 > Software. https://github.com/nashyegi/hyperhex. Specify the commit or release used
 > and the actual access date.
 
-The repository documentation does not currently supply a paper DOI, an archived
-software-release DOI, or a patent identifier. This does not assert that none exists;
-verified bibliographic and legal details must be supplied by the maintainer before
-they can be listed. Do not describe a manuscript as peer-reviewed, or an application
-as a granted patent, without the corresponding evidence.
+The associated preprint is archived on Zenodo at
+[doi:10.5281/zenodo.23551618](https://doi.org/10.5281/zenodo.23551618). It is a
+preprint and has not been peer reviewed. Software release v0.2.0 is archived at
+[doi:10.5281/zenodo.23345933](https://doi.org/10.5281/zenodo.23345933). Do not
+describe the manuscript as peer-reviewed.
 
 For a citable research release, archive the exact reviewed version, attach the
 reproduction materials, and update citation metadata with its actual version,
