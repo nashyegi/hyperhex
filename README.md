@@ -69,6 +69,12 @@ slots. Horizontal moves follow neighboring H3 cells; vertical moves connect adja
 layers. HyperHex plans drone routes sequentially against an interval ledger. The
 workbench renders those discrete trajectories; it is not a vehicle-dynamics simulator.
 
+The workbench includes a configuration selector to switch between the default setting
+(resolution 9, 4-second slots, no buffer) and the paper setting (resolution 10,
+8-second slots, one-slot buffer, ~114.7 m guaranteed separation), matching the
+preprint's main experiments. Experiment scripts in `scripts/` use the same engine
+configuration parameters and can reproduce published results.
+
 ## Quick start
 
 You need Git, Bun, Node.js compatible with the project's dependencies, and a browser
