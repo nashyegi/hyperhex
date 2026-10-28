@@ -5,7 +5,7 @@ import { cellToBoundary, cellToLatLng, gridDisk } from "h3-js";
 import { buildScenario, findStacks, ORIGIN } from "../../src/lib/hyperhex";
 
 const out = process.argv[2] ?? "fig2.json";
-const s = buildScenario("hyperhex", 12);
+const s = buildScenario("hyperhex", 12, { id: "default", label: "Default", res: 9, engine: { slotSec: 4, bufferSlots: 0 } });
 s.air.injectNoFly(s.center, 1, s.drones, 8);
 const stacks = findStacks(s.drones);
 const st = stacks.find((x) => x.members.length === 3);
