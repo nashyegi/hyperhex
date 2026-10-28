@@ -53,13 +53,7 @@ const lines = [
     which,
     setting: st,
     commit,
-    dirty: (() => {
-      try {
-        return execSync("git status --porcelain").toString().trim().length > 0;
-      } catch {
-        return null;
-      }
-    })(),
+    note: "engine = commit + combined research patch (uncommitted)",
     runtime: `bun ${typeof Bun !== "undefined" ? Bun.version : "?"}`,
     seeds: Array.from({ length: SEEDS }, (_, s) => (which === "e3" ? 1000 : 2000) + s),
     orders: ORDERS,

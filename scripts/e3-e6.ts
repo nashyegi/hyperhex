@@ -38,13 +38,7 @@ lines.push(
   JSON.stringify({
     kind: "meta",
     commit,
-    dirty: (() => {
-      try {
-        return execSync("git status --porcelain").toString().trim().length > 0;
-      } catch {
-        return null;
-      }
-    })(),
+    note: "engine = commit + combined research patch (uncommitted)",
     runtime: `bun ${typeof Bun !== "undefined" ? Bun.version : "?"}`,
     seeds: Array.from({ length: SEEDS }, (_, s) => 1000 + s),
     closure: CLOSURE,

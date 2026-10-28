@@ -47,7 +47,7 @@ for m in M:
     ax[i].errorbar(meta["radii"],[y[0] for y in ys],yerr=[y[1] for y in ys],fmt=sty[m],capsize=3,label=m); ax[i].set_ylabel(lab)
 for a in ax: a.set_xlabel("Closure radius (H3 rings)"); a.set_xticks(meta["radii"]); a.grid(alpha=.3)
 ax[3].set_yscale("log"); ax[0].legend(fontsize=7)
-fig.suptitle(f"Closure stress (endpoints may lie in closure): pooled over activation slots {meta['activation']} and fleets {meta['fleets']}, {len(meta['seeds'])} seeds each; mean ± 95% CI",fontsize=9)
+fig.suptitle(f"E4 closure stress (endpoints may lie in closure): pooled over activation slots {meta['activation']} and fleets {meta['fleets']}, {len(meta['seeds'])} seeds each; mean ± 95% CI",fontsize=9)
 fig.tight_layout(); fig.savefig(os.path.join(outdir,"fig_e4_closure.png"),dpi=200)
 # Figure 2: by activation slot, arrivals and disruption, local vs global (outside policy)
 fig,ax=plt.subplots(1,2,figsize=(9,3.4))
@@ -56,5 +56,5 @@ for m in ["local+fallback","global+fallback"]:
     ys=[summ([r for r in R if r["method"]==m and r["policy"]=="outside" and r["at"]==a])[k] for a in meta["activation"]]
     ax[i].errorbar(meta["activation"],[y[0] for y in ys],yerr=[y[1] for y in ys],fmt=sty[m],capsize=3,label=m); ax[i].set_ylabel(lab)
 for a in ax: a.set_xlabel("Activation slot"); a.grid(alpha=.3)
-ax[0].legend(fontsize=8); fig.suptitle("Local repair vs full-fleet replan (endpoints outside closure; pooled over radius and fleet)",fontsize=9)
+ax[0].legend(fontsize=8); fig.suptitle("E4 local repair vs full-fleet replan (endpoints outside closure; pooled over radius and fleet)",fontsize=9)
 fig.tight_layout(); fig.savefig(os.path.join(outdir,"fig_e4_local_vs_global.png"),dpi=200)
